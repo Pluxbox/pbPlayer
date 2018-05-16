@@ -10,30 +10,14 @@ import {
 	Button,
 } from 'react-native';
 
-
 // //GUI ifused as a React Native Component
 import Gui from './gui';
 
-
-
+//Bridge Objective-c
 var NativeRNAudio = require('NativeModules').RNAudio;
 
 
-
-
-/**
- * High-level docs for the RNAudio iOS API can be written here.
- */
-
-// var RNAudio = {
-//   test: function() {
-
-//   	console.log("bbb")
-//     // NativeRNAudio.test();
-//   }
-// };
-
-
+console.log(NativeRNAudio)
 
 export default class RNAudio extends Gui {
 	
@@ -102,7 +86,10 @@ export default class RNAudio extends Gui {
 	play () {
 		console.log("isPlaying");
 		this.state._isPlaying = true;		
+
+		// NativeRNAudio.test();
 	}
+
 
 	pause () {
 		console.log("isNotPlaying");
