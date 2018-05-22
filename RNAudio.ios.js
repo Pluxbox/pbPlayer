@@ -26,14 +26,15 @@ export default class RNAudio extends Gui {
 
 		this.state = Object.assign ({
 			
+			//Public vars
+			src: null,
+
 			//Callbacks
 			autoplay: false,
 			canplay: null,
 			ended: null,
-			src: null,
 
 			//Private  vars
-			
 			_isPlaying: false,
 			_currentTime: 0,
 			_duration: 0,
@@ -47,12 +48,12 @@ export default class RNAudio extends Gui {
 		this.subscription = NativeRNAudioEmitter.addListener(
 			'PlayerUpdate',
 			( data ) => {
-				if(this.state._isComponent) {
+				if(this.state._key == data._key && this.state._isComponent) {
 					this.setState( {
 						currentTime: data.currentTime
 					});
-				} else {
-					this.state = Object.assign(this.state, data);	
+				} else  if(this.state._key == data._key){
+					this.state.currentTime = data.currentTime;
 				}
 			}
 		);
@@ -125,16 +126,11 @@ export default class RNAudio extends Gui {
 	//Private fuctions
 	_prepare() {
 
-		// console.log(this.state.src)
-
 		if(!this.state.src) {
 			return;
 		}
 
-
-		
 		this.state._key = this._djb2Code( this.state.src );
-console.log(this.state._key)
 
 		NativeRNAudio.prepare( 
 			this.state.src,

@@ -31,7 +31,7 @@ RCT_EXPORT_MODULE()
 RCT_EXPORT_METHOD(play:(nonnull NSNumber*)key ) {
   AVPlayer* player = [self playerForKey:key];
   [player play];
-  printf("[SPKRLOG] Play %s\n", player);
+  printf("[SPKRLOG] Play\n");
 }
 
 RCT_EXPORT_METHOD(pause:(nonnull NSNumber*)key ) {
@@ -56,12 +56,9 @@ RCT_EXPORT_METHOD(
   
 //  [player play];
 
-    CMTime interval = CMTimeMakeWithSeconds(.25, NSEC_PER_SEC); // 1 second
-    playbackTimeObserver = [ player addPeriodicTimeObserverForInterval:interval queue:NULL usingBlock:^(CMTime time) {
-      [self sendEventWithName:@"PlayerUpdate" body:  @{@"currentTime": [NSNumber numberWithFloat:CMTimeGetSeconds(time)] }];
-    }];
 
     [[self playerPool] setObject:player forKey:key];
+    [self updateJSScope: key];
   }
 
 - (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object
@@ -79,14 +76,24 @@ RCT_EXPORT_METHOD(
 
 
 
-//[player removeTimeObserver:self.playbackTimeObserver];
+- (void)updateJSScope: (nonnull NSNumber*)key {
+  
+  AVPlayer* player = [self playerForKey:key];
+  CMTime interval = CMTimeMakeWithSeconds(.25, NSEC_PER_SEC); // 1 second
+  
+  playbackTimeObserver = [ player addPeriodicTimeObserverForInterval:interval queue:NULL usingBlock:^(CMTime time) {
+    
+    NSDictionary * data = @{
+                              @"currentTime": [NSNumber numberWithFloat:CMTimeGetSeconds(time)],
+                              @"_key": key
+                            };
 
-
-//Otherwise you get an error
-+ (BOOL)requiresMainQueueSetup
-{
-    return YES;
+    [self sendEventWithName:@"PlayerUpdate" body: data ];
+  }];
 }
+
+
+//[player removeTimeObserver:self.playbackTimeObserver];
 
 
 @end
