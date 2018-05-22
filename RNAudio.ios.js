@@ -125,7 +125,7 @@ export default class RNAudio extends Gui {
 	//Private fuctions
 	_prepare() {
 
-		NativeRNAudio.prepare( 
+		this.state._src && NativeRNAudio.prepare( 
 			this.state._src,
 			this.state._key 
 		);

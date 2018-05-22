@@ -32,7 +32,7 @@ RCT_EXPORT_METHOD(
 ){
 
 
-printf("%s\n", fileName);
+//NSLog("[SPKRLOG] %s \n", fileName);
 
 	printf("[SPKRLOG] Called native function\n");
   
@@ -40,7 +40,10 @@ printf("%s\n", fileName);
   
  //  NSURL *url = [NSURL URLWithString:@"http://icecast.omroep.nl/radio1-bb-aac"];
 //   NSURL *url = [NSURL URLWithString:@"https://bitdash-a.akamaihd.net/content/sintel/hls/playlist.m3u8"];
-  NSURL *url = [NSURL URLWithString:@"https://yourspeakr.com/audio/RadiopodcastDennisLaupman.mp3"];
+  NSURL *url = [NSURL URLWithString:fileName];
+  
+  
+  
   player = [[AVPlayer alloc] initWithURL:url];
   [player addObserver:self forKeyPath:@"status" options:0 context:nil];
   [player play];
