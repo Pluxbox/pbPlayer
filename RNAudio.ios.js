@@ -30,16 +30,17 @@ export default class RNAudio extends Gui {
 			autoplay: false,
 			canplay: null,
 			ended: null,
+			src: null,
 
 			//Private  vars
-			_src: null,
+			
 			_isPlaying: false,
 			_currentTime: 0,
 			_duration: 0,
 			_loop: false,
 			_muted: false,
 			_isComponent: false,
-			_key: this._guid(),
+			_key: null,
 		}, props);
 
 
@@ -58,6 +59,7 @@ export default class RNAudio extends Gui {
 	}
 	componentDidMount() {
 		this.state._isComponent = true;
+		this._prepare();	
 	}
 
 	componentWillUnmount() {
@@ -67,7 +69,7 @@ export default class RNAudio extends Gui {
 
 	//Public params
 	set src ( string ) {
-		this.state._src = string;
+		this.state.src = string;
 		this._prepare();
 	}
 	
@@ -109,24 +111,33 @@ export default class RNAudio extends Gui {
 	}
 
 	play () {
-		console.log("isPlaying");
+		console.log("isPlaying", this.state._key);
 		this.state._isPlaying = true;	
-
-		NativeRNAudio.play();
+		NativeRNAudio.play( this.state._key );
 	}
 
 	pause () {
 		console.log("isNotPlaying");
 		this.state._isPlaying = false;
-
-		NativeRNAudio.pause();
+		NativeRNAudio.pause( this.state._key );
 	}
 
 	//Private fuctions
 	_prepare() {
 
-		this.state._src && NativeRNAudio.prepare( 
-			this.state._src,
+		// console.log(this.state.src)
+
+		if(!this.state.src) {
+			return;
+		}
+
+
+		
+		this.state._key = this._djb2Code( this.state.src );
+console.log(this.state._key)
+
+		NativeRNAudio.prepare( 
+			this.state.src,
 			this.state._key 
 		);
 
@@ -139,15 +150,15 @@ export default class RNAudio extends Gui {
 		// 		this.state.ended && this.state.	ended();
 		// 	}, 4000);
 		// }, 3000)
-	}
+	}	
 
-	_guid() {
-	  function s4() {
-	    return Math.floor((1 + Math.random()) * 0x10000)
-	      .toString(16)
-	      .substring(1);
+	_djb2Code(str) {
+	  var hash = 5381, i, char;
+	  for (i = 0; i < str.length; i++) {
+	      char = str.charCodeAt(i);
+	      hash = ((hash << 5) + hash) + char; /* hash * 33 + c */
 	  }
-	  return s4() + s4() + '-' + s4() + '-' + s4() + '-' + s4() + '-' + s4() + s4() + s4();
+	  return hash;
 	}
 }
 
