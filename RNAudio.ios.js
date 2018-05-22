@@ -38,27 +38,37 @@ export default class RNAudio extends Gui {
 			_duration: 0,
 			_loop: false,
 			_muted: false,
+			_isComponent: false,
+			_key: this._guid(),
 		}, props);
 
 
 		this.subscription = NativeRNAudioEmitter.addListener(
 			'PlayerUpdate',
 			( data ) => {
-				this.state = Object.assign(data, this.state);
-
-				console.log(this.state)
+				if(this.state._isComponent) {
+					this.setState( {
+						currentTime: data.currentTime
+					});
+				} else {
+					this.state = Object.assign(this.state, data);	
+				}
 			}
 		);
+	}
+	componentDidMount() {
+		this.state._isComponent = true;
 	}
 
 	componentWillUnmount() {
 		this.subscription.remove();	
 	}
 
+
 	//Public params
 	set src ( string ) {
 		this.state._src = string;
-		this._loadAsset();
+		this._prepare();
 	}
 	
 	set canplay ( callback ) {
@@ -108,14 +118,18 @@ export default class RNAudio extends Gui {
 	pause () {
 		console.log("isNotPlaying");
 		this.state._isPlaying = false;
-		
+
 		NativeRNAudio.pause();
 	}
 
 	//Private fuctions
-	_loadAsset() {
+	_prepare() {
 
-	NativeRNAudio.test();
+		NativeRNAudio.prepare( 
+			this.state._src,
+			this.state._key 
+		);
+
 		//Temporary
 		// setTimeout( () => {
 		// 	this.state.canplay && this.state.canplay();
@@ -125,6 +139,15 @@ export default class RNAudio extends Gui {
 		// 		this.state.ended && this.state.	ended();
 		// 	}, 4000);
 		// }, 3000)
+	}
+
+	_guid() {
+	  function s4() {
+	    return Math.floor((1 + Math.random()) * 0x10000)
+	      .toString(16)
+	      .substring(1);
+	  }
+	  return s4() + s4() + '-' + s4() + '-' + s4() + '-' + s4() + '-' + s4() + s4() + s4();
 	}
 }
 
