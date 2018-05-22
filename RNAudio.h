@@ -1,5 +1,9 @@
 #import <React/RCTBridgeModule.h>
+#import <React/RCTEventEmitter.h>
 
-@interface RNAudio : NSObject <RCTBridgeModule>
+#import <Foundation/Foundation.h>
+
+@interface NativeRNAudio : RCTEventEmitter <RCTBridgeModule>
+
 
 @end

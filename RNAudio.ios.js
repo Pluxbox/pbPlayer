@@ -5,6 +5,8 @@
 'use strict';
 import React, { Component } from 'react';
 import {  
+	NativeModules,
+	NativeEventEmitter,
 	View,
 	Text,
 	Button,
@@ -14,10 +16,8 @@ import {
 import Gui from './gui';
 
 //Bridge Objective-c
-var NativeRNAudio = require('NativeModules').RNAudio;
-
-
-console.log(NativeRNAudio)
+const { NativeRNAudio } = NativeModules;
+const NativeRNAudioEmitter = new NativeEventEmitter(NativeRNAudio);
 
 export default class RNAudio extends Gui {
 	
@@ -39,6 +39,20 @@ export default class RNAudio extends Gui {
 			_loop: false,
 			_muted: false,
 		}, props);
+
+
+		this.subscription = NativeRNAudioEmitter.addListener(
+			'PlayerUpdate',
+			( data ) => {
+				this.state = Object.assign(data, this.state);
+
+				console.log(this.state)
+			}
+		);
+	}
+
+	componentWillUnmount() {
+		this.subscription.remove();	
 	}
 
 	//Public params
@@ -72,7 +86,8 @@ export default class RNAudio extends Gui {
 	}
 
 	get currentTime () {
-		return this.state._currentTime;
+		
+  		return this.state._currentTime;
 	}
 
 	set currentTime ( seconds ) {
@@ -85,30 +100,31 @@ export default class RNAudio extends Gui {
 
 	play () {
 		console.log("isPlaying");
-		this.state._isPlaying = true;		
+		this.state._isPlaying = true;	
 
-		// NativeRNAudio.test();
+		NativeRNAudio.play();
 	}
-
 
 	pause () {
 		console.log("isNotPlaying");
 		this.state._isPlaying = false;
+		
+		NativeRNAudio.pause();
 	}
 
 	//Private fuctions
 	_loadAsset() {
 
+	NativeRNAudio.test();
 		//Temporary
-		setTimeout( () => {
+		// setTimeout( () => {
+		// 	this.state.canplay && this.state.canplay();
+		// 	this.state.autoplay && this.play();
+		// 	setTimeout( () => {
 
-			this.state.canplay && this.state.canplay();
-			this.state.autoplay && this.play();
-			setTimeout( () => {
-
-				this.state.ended && this.state.	ended();
-			}, 4000);
-		}, 3000)
+		// 		this.state.ended && this.state.	ended();
+		// 	}, 4000);
+		// }, 3000)
 	}
 }
 

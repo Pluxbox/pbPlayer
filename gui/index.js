@@ -11,14 +11,20 @@ export default  class GUI extends Component {
 	
 	render() {
 		return (
-			<View>
-			<Button 
-				title="Play" 
-				onPress={() => {
-					this.play();
-				}}
-			/>
-			<Text>Audio Player GUI</Text>
+			<View style={styles.container}>
+				<Button 
+					title="Play" 
+					onPress={() => {
+						this.play();
+					}}
+				/>
+				<Button 
+					title="Pause" 
+					onPress={() => {
+						this.pause();
+					}}
+				/>
+				<Text>Audio Player GUI</Text>
 			</View> 
 		)
 	}
@@ -26,6 +32,10 @@ export default  class GUI extends Component {
 
 const styles = StyleSheet.create({
 	container: {
-		backgroundColor: '#ff00ff',
+		backgroundColor: 'rgba(255,0,255,.5)',
+		flexDirection: 'row',
+		alignItems:'center',
 	}
+
+
 });
