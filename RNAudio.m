@@ -3,8 +3,7 @@
 
 @implementation NativeRNAudio {
   NSMutableDictionary* _playerPool;
-//  AVPlayer* player;
-  AVPlayerItem *currentItem;
+  // AVPlayerItem *currentItem;
   AVPlayer * playbackTimeObserver;
 }
 

@@ -42,8 +42,8 @@ export default class RNAudio extends Gui {
 			_muted: false,
 			_isComponent: false,
 			_key: null,
+			_isLoaded: false,
 		}, props);
-
 
 		this.subscription = NativeRNAudioEmitter.addListener(
 			'PlayerUpdate',
@@ -58,6 +58,7 @@ export default class RNAudio extends Gui {
 			}
 		);
 	}
+
 	componentDidMount() {
 		this.state._isComponent = true;
 		this._prepare();	
@@ -67,11 +68,10 @@ export default class RNAudio extends Gui {
 		this.subscription.remove();	
 	}
 
-
 	//Public params
 	set src ( string ) {
 		this.state.src = string;
-		this._prepare();
+		// this._prepare();
 	}
 	
 	set canplay ( callback ) {
@@ -112,8 +112,11 @@ export default class RNAudio extends Gui {
 	}
 
 	play () {
-		console.log("isPlaying", this.state._key);
+
+		!this.state._isLoaded && this._prepare();
+
 		this.state._isPlaying = true;	
+
 		NativeRNAudio.play( this.state._key );
 	}
 
@@ -136,6 +139,10 @@ export default class RNAudio extends Gui {
 			this.state.src,
 			this.state._key 
 		);
+
+
+		this.state._isLoaded = true;	
+		this.state.autoplay && this.play();
 
 		//Temporary
 		// setTimeout( () => {
