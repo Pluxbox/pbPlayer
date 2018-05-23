@@ -42,6 +42,7 @@ RCT_EXPORT_METHOD(pause:(nonnull NSNumber*)key ) {
 RCT_EXPORT_METHOD(
     	prepare:(NSString*)fileName
     	withKey:(nonnull NSNumber*)key
+      withCallback:(RCTResponseSenderBlock)callback
 	){
   
   // [[AVAudioSession sharedInstance] setCategory: AVAudioSessionCategoryPlayback error:nil];
@@ -50,14 +51,20 @@ RCT_EXPORT_METHOD(
 //   NSURL *url = [NSURL URLWithString:@"https://bitdash-a.akamaihd.net/content/sintel/hls/playlist.m3u8"];
   // NSURL *url = [NSURL URLWithString:@"https://yourspeakr.com/audio/RadiopodcastDennisLaupman.mp3"];
 
-  AVPlayer * player = [[AVPlayer alloc] initWithURL:[ NSURL URLWithString:fileName ] ];
-  [player addObserver:self forKeyPath:@"status" options:0 context:nil];
-  
-//  [player play];
-
+  	AVPlayer * player = [[AVPlayer alloc] initWithURL:[ NSURL URLWithString:fileName ] ];
+  	[player addObserver:self forKeyPath:@"status" options:0 context:nil];
 
     [[self playerPool] setObject:player forKey:key];
     [self updateJSScope: key];
+
+    CMTime duration = player.currentItem.asset.duration;
+    float seconds = CMTimeGetSeconds(duration);
+  
+    if (seconds != seconds) {
+      seconds = 0;
+    }
+  
+    callback( @[ @{ @"_duration": @(seconds) } ] );
   }
 
 - (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object
@@ -83,7 +90,7 @@ RCT_EXPORT_METHOD(
   playbackTimeObserver = [ player addPeriodicTimeObserverForInterval:interval queue:NULL usingBlock:^(CMTime time) {
     
     NSDictionary * data = @{
-                              @"currentTime": [NSNumber numberWithFloat:CMTimeGetSeconds(time)],
+                              @"_currentTime": [NSNumber numberWithFloat:CMTimeGetSeconds(time)],
                               @"_key": key
                             };
 
@@ -94,5 +101,10 @@ RCT_EXPORT_METHOD(
 
 //[player removeTimeObserver:self.playbackTimeObserver];
 
+
++ (BOOL)requiresMainQueueSetup
+{
+    return YES;
+}
 
 @end

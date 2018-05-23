@@ -50,10 +50,10 @@ export default class RNAudio extends Gui {
 			( data ) => {
 				if(this.state._key == data._key && this.state._isComponent) {
 					this.setState( {
-						currentTime: data.currentTime
+						_currentTime: data._currentTime
 					});
 				} else  if(this.state._key == data._key){
-					this.state.currentTime = data.currentTime;
+					this.state._currentTime = data._currentTime;
 				}
 			}
 		);
@@ -137,7 +137,10 @@ export default class RNAudio extends Gui {
 
 		NativeRNAudio.prepare( 
 			this.state.src,
-			this.state._key 
+			this.state._key,
+			( data ) => {
+				this.state._duration = data._duration;
+			}
 		);
 
 
