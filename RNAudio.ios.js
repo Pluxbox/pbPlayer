@@ -110,15 +110,14 @@ export default class RNAudio extends Gui {
 	play () {
 
 		!this.state._isLoaded && this._prepare();
-
-		this.state._isPlaying = true;	
+		this._setState( { _isPlaying:true }  )
 
 		NativeRNAudio.play( this.state._key );
 	}
 
 	pause () {
 		console.log("isNotPlaying");
-		this.state._isPlaying = false;
+		this._setState( { _isPlaying:false }  )
 		NativeRNAudio.pause( this.state._key );
 	}
 

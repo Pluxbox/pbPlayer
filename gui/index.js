@@ -17,15 +17,17 @@ export default  class GUI extends Component {
 	}
 
 	_togglePlayBtn() {
-	// <Button 
-	// 				title="Play" 
-	// 				onPress={() => {
-	// 					this.play();
-	// 				}}
-	// 			/>
-	// 			
 
-		return (
+		const play = (
+			<Button 
+				title="Play" 
+				onPress={() => {
+					this.play();
+				}}
+			/>
+		)
+	
+		const pause = (
 			<Button 
 				title="Pause" 
 				onPress={() => {
@@ -33,6 +35,8 @@ export default  class GUI extends Component {
 
 			}}/>
 		)
+
+		return this.state._isPlaying ? pause : play;
 	}
 
 	render() {
