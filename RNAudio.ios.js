@@ -48,12 +48,8 @@ export default class RNAudio extends Gui {
 		this.subscription = NativeRNAudioEmitter.addListener(
 			'PlayerUpdate',
 			( data ) => {
-				if(this.state._key == data._key && this.state._isComponent) {
-					this.setState( {
-						_currentTime: data._currentTime
-					});
-				} else  if(this.state._key == data._key){
-					this.state._currentTime = data._currentTime;
+				if(this.state._key == data._key){
+					this._setState( { _currentTime: data._currentTime }  )
 				}
 			}
 		);
@@ -165,6 +161,14 @@ export default class RNAudio extends Gui {
 	      hash = ((hash << 5) + hash) + char; /* hash * 33 + c */
 	  }
 	  return hash;
+	}
+
+	_setState( data ) {
+		if(this.state._isComponent) {
+			this.setState( data );
+		} else  if(this.state._key == data._key){
+			this.state = Object.assign(this.state, data)
+		}
 	}
 }
 
