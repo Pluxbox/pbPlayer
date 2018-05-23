@@ -3,6 +3,7 @@ import {
   View, 
   Text,
   Button,
+  Slider,
   StyleSheet 
 } from "react-native";
 
@@ -43,9 +44,11 @@ export default  class GUI extends Component {
 		return (
 			<View style={styles.container}>
 				{this._togglePlayBtn()}
-				
 				<Text style={styles.currentTime}>{Moment(this.state._currentTime*1000).format('mm:ss')}</Text>
-				<Text style={{flex:1}}>Audio Player GUI</Text>
+				<Slider 
+					style={styles.scrubBar}
+					disabled={this.state._duration > 0 ? true : false}
+				/>
 				<Text style={styles.currentTime}>{Moment(this._calculateRemainingDuration()).format('mm:ss')}</Text>
 			</View> 
 		)
@@ -62,5 +65,8 @@ const styles = StyleSheet.create({
 	currentTime: {
 		backgroundColor: '#ff4400',
 		flexBasis: 50,
-	}
+	},
+	scrubBar: {
+		flex:1,
+	},
 });
