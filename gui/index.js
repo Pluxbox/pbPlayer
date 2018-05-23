@@ -40,6 +40,11 @@ export default  class GUI extends Component {
 		return this.state._isPlaying ? pause : play;
 	}
 
+	//Temp
+	test( value) {
+		console.log(value)
+	}
+
 	render() {
 		return (
 			<View style={styles.container}>
@@ -47,7 +52,9 @@ export default  class GUI extends Component {
 				<Text style={styles.currentTime}>{Moment(this.state._currentTime*1000).format('mm:ss')}</Text>
 				<Slider 
 					style={styles.scrubBar}
-					disabled={this.state._duration > 0 ? true : false}
+					disabled={this.state._duration > 0 ? false : true}
+					maximumValue={this.state._duration}
+					onValueChange={( value) => { this.test(value) }}
 				/>
 				<Text style={styles.currentTime}>{Moment(this._calculateRemainingDuration()).format('mm:ss')}</Text>
 			</View> 
