@@ -71,6 +71,7 @@ export default  class GUI extends Component {
 				{this._togglePlayBtn()}
 				<Text style={styles.currentTime}>{Moment(this.state._currentTime*1000).format('mm:ss')}</Text>
 				<Slider 
+					value={this.state._currentTime}
 					style={styles.scrubBar}
 					disabled={this.state._duration > 0 ? false : true}
 					maximumValue={this.state._duration}
