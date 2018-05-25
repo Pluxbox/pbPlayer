@@ -9,20 +9,32 @@ ReactNative Audio lib and component for IOS
 
 ## INSTALLATION ##
 
+
 ## USAGE ##
 
-Add on top of component file
+Add on top of component file:
 
 ```
     import Audio from 'RNAudio';
 ```
 
 
-Add in comonent render function
+Add in component render function:
 
 ```
     <Audio 
         src="https://yourspeakr.com/audio/RadiopodcastDennisLaupman.mp3" 
         autoplay={true} 
     />
+```
+
+**OR**
+
+In a JS class function:
+
+```
+ let    player = new Audio();
+        player.src = 'https://yourspeakr.com/audio/RadiopodcastDennisLaupman.mp3';
+        player.play();
+
 ```
