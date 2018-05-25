@@ -95,12 +95,12 @@ export default class RNAudio extends Gui {
 	}
 
 	get currentTime () {
-		
   		return this.state._currentTime;
 	}
 
 	set currentTime ( seconds ) {
 		this.state._currentTime = seconds;
+		NativeRNAudio.seek( this.state._key, seconds );
 	}
 
 	get duration () {

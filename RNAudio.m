@@ -39,6 +39,13 @@ RCT_EXPORT_METHOD(pause:(nonnull NSNumber*)key ) {
 	printf("[SPKRLOG] Pause\n");
 }
 
+RCT_EXPORT_METHOD(seek:(nonnull NSNumber*)key withValue:(nonnull NSNumber*)value) {
+  AVPlayer* player = [self playerForKey:key];
+  [player.currentItem seekToTime:CMTimeMakeWithSeconds( [value floatValue], 1)];
+  printf("[SPKRLOG] Seek\n");
+}
+
+
 RCT_EXPORT_METHOD(
     	prepare:(NSString*)fileName
     	withKey:(nonnull NSNumber*)key
