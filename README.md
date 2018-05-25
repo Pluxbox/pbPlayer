@@ -12,6 +12,8 @@ ReactNative Audio lib and component for IOS
 
 ## USAGE ##
 
+**Component based"**
+
 Add on top of component file:
 
 ```
