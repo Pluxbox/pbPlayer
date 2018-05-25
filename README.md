@@ -1,6 +1,6 @@
 # ReactNative Audio #
 
-ReactNative Audio lib and component for IOS
+ReactNative Audio lib for IOS
 
 - Support for network files (AAC, MP3 etc)
 - Support for steaming (Ice/Shoutcast, HLS etc) 
