@@ -1,6 +1,7 @@
 #import "RNAudio.h"
 @import AVFoundation;
 
+
 @implementation NativeRNAudio {
   NSMutableDictionary* _playerPool;
   // AVPlayerItem *currentItem;
@@ -52,7 +53,7 @@ RCT_EXPORT_METHOD(
       withCallback:(RCTResponseSenderBlock)callback
 	){
   
-  // [[AVAudioSession sharedInstance] setCategory: AVAudioSessionCategoryPlayback error:nil];
+  [[AVAudioSession sharedInstance] setCategory: AVAudioSessionCategoryPlayback error:nil];
   
  //  NSURL *url = [NSURL URLWithString:@"https://icecast.omroep.nl/radio1-bb-aac"];
 //   NSURL *url = [NSURL URLWithString:@"https://bitdash-a.akamaihd.net/content/sintel/hls/playlist.m3u8"];

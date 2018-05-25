@@ -35,11 +35,34 @@ export default  class GUI extends Component {
 				disabled={!this.state.src}
 				onPress={() => {
 					this.pause();
-
 			}}/>
 		)
 
 		return this.state._isPlaying ? pause : play;
+	}
+
+	_toggleMuteBtn() {
+
+		const on = (
+			<Button 
+				title="ON" 
+				disabled={!this.state.src}
+				onPress={() => {
+					this.play();
+				}}
+			/>
+		)
+	
+		const off = (
+			<Button 
+				title="OFF" 
+				disabled={!this.state.src}
+				onPress={() => {
+					this.pause();
+			}}/>
+		)
+
+		return this.state._isMuted ? off : on;
 	}
 
 	render() {
@@ -53,6 +76,7 @@ export default  class GUI extends Component {
 					maximumValue={this.state._duration}
 					onValueChange={( value ) => { this.currentTime = value }}
 				/>
+				{this._toggleMuteBtn()}
 				<Text style={styles.currentTime}>{Moment(this._calculateRemainingDuration()).format('mm:ss')}</Text>
 			</View> 
 		)

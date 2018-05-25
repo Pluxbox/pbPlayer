@@ -139,7 +139,7 @@ export default class RNAudio extends Gui {
 
 
 		this.state._isLoaded = true;	
-		this.state.autoplay && this.play();
+		// this.state.autoplay && this.play();
 
 		//Temporary
 		// setTimeout( () => {
@@ -151,6 +151,8 @@ export default class RNAudio extends Gui {
 		// 	}, 4000);
 		// }, 3000)
 	}	
+
+	
 
 	_djb2Code(str) {
 	  var hash = 5381, i, char;
