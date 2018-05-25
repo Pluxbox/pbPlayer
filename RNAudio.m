@@ -46,6 +46,11 @@ RCT_EXPORT_METHOD(seek:(nonnull NSNumber*)key withValue:(nonnull NSNumber*)value
   printf("[SPKRLOG] Seek\n");
 }
 
+RCT_EXPORT_METHOD(muted:(nonnull NSNumber*)key withValue:(BOOL *)mute) {
+  AVPlayer* player = [self playerForKey:key];
+  player.muted = mute;
+  printf("[SPKRLOG] Mute\n");
+}
 
 RCT_EXPORT_METHOD(
     	prepare:(NSString*)fileName

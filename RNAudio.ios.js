@@ -39,7 +39,7 @@ export default class RNAudio extends Gui {
 			_currentTime: 0,
 			_duration: 0,
 			_loop: false,
-			_muted: false,
+			_isMuted: false,
 			_isComponent: false,
 			_key: null,
 			_isLoaded: false,
@@ -83,11 +83,12 @@ export default class RNAudio extends Gui {
 	}
 
 	get muted () {
-		return this.state.muted;
+		return this.state._isMuted;
 	}
 
 	set muted ( bool ) {
-		this.state._muted = bool;
+		this.state._isMuted = bool;
+		NativeRNAudio.muted( this.state._key, bool );
 	}
 
 	get loop () {
@@ -107,7 +108,6 @@ export default class RNAudio extends Gui {
 	}
 
 	play () {
-
 		!this.state._isLoaded && this._prepare();
 		this._setState( { _isPlaying:true }  )
 
@@ -119,6 +119,8 @@ export default class RNAudio extends Gui {
 		this._setState( { _isPlaying:false }  )
 		NativeRNAudio.pause( this.state._key );
 	}
+
+
 
 	//Private fuctions
 	_prepare() {
@@ -152,7 +154,7 @@ export default class RNAudio extends Gui {
 		// }, 3000)
 	}	
 
-	
+
 
 	_djb2Code(str) {
 	  var hash = 5381, i, char;

@@ -45,20 +45,20 @@ export default  class GUI extends Component {
 
 		const on = (
 			<Button 
-				title="ON" 
+				title="OFF" 
 				disabled={!this.state.src}
 				onPress={() => {
-					this.play();
+					this.muted = true;
 				}}
 			/>
 		)
 	
 		const off = (
 			<Button 
-				title="OFF" 
+				title="ON" 
 				disabled={!this.state.src}
 				onPress={() => {
-					this.pause();
+					this.muted = false;
 			}}/>
 		)
 
@@ -76,8 +76,8 @@ export default  class GUI extends Component {
 					maximumValue={this.state._duration}
 					onValueChange={( value ) => { this.currentTime = value }}
 				/>
-				{this._toggleMuteBtn()}
 				<Text style={styles.currentTime}>{Moment(this._calculateRemainingDuration()).format('mm:ss')}</Text>
+				{this._toggleMuteBtn()}
 			</View> 
 		)
 	}
