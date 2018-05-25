@@ -22,6 +22,7 @@ export default  class GUI extends Component {
 		const play = (
 			<Button 
 				title="Play" 
+				disabled={!this.state.src}
 				onPress={() => {
 					this.play();
 				}}
@@ -31,6 +32,7 @@ export default  class GUI extends Component {
 		const pause = (
 			<Button 
 				title="Pause" 
+				disabled={!this.state.src}
 				onPress={() => {
 					this.pause();
 
