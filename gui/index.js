@@ -12,6 +12,12 @@ import Moment from 'moment';
 
 export default  class GUI extends Component {
 
+	constructor( props ) {
+		super( props );
+
+		this.isSeeking = false;
+	}
+
 	_calculateRemainingDuration() {
 		const duration = (this.state._duration-this.state._currentTime) * 1000
 		return duration < 0 ? 0 : duration;
@@ -65,6 +71,10 @@ export default  class GUI extends Component {
 		return this.state._isMuted ? off : on;
 	}
 
+	shouldComponentUpdate() {
+		return !this.isSeeking;
+	}
+
 	render() {
 		return (
 			<View style={styles.container}>
@@ -75,7 +85,16 @@ export default  class GUI extends Component {
 					style={styles.scrubBar}
 					disabled={this.state._duration > 0 ? false : true}
 					
-					onValueChange={( value ) => { this.currentTime = value * this.state._duration }}
+					onValueChange={( value ) => { 
+						this.currentTime = value * this.state._duration 
+						this.isSeeking = true;
+					}}
+
+					onSlidingComplete = { () => {
+						this.isSeeking = false;
+					}
+
+					}
 				/>
 				<Text style={styles.currentTime}>{Moment(this._calculateRemainingDuration()).format('mm:ss')}</Text>
 				{this._toggleMuteBtn()}
