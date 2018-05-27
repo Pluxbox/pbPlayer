@@ -137,7 +137,7 @@ export default class RNAudio extends Gui {
 
 		this.state._isLoaded = true;	
 
-		if(this.state.autoplay) {
+		if(this.state.autoplay && this.state._isComponent) {
 			this.play();	
 			this._setState({ _isPlaying: true})
 		} 
