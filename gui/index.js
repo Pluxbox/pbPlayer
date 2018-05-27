@@ -3,20 +3,19 @@ import {
   View, 
   Text,
   Button,
-  Slider,
+
   StyleSheet 
 } from "react-native";
+
+import ScrubBar from './scrubbar';
+
+console.log(ScrubBar)
+
 
 import Moment from 'moment';
 
 
 export default  class GUI extends Component {
-
-	constructor( props ) {
-		super( props );
-
-		this.isSeeking = false;
-	}
 
 	_calculateRemainingDuration() {
 		const duration = (this.state._duration-this.state._currentTime) * 1000
@@ -31,6 +30,7 @@ export default  class GUI extends Component {
 				disabled={!this.state.src}
 				onPress={() => {
 					this.play();
+					this._setState( { _isPlaying:true }  );
 				}}
 			/>
 		)
@@ -41,6 +41,7 @@ export default  class GUI extends Component {
 				disabled={!this.state.src}
 				onPress={() => {
 					this.pause();
+					this._setState( { _isPlaying:false } );
 			}}/>
 		)
 
@@ -55,6 +56,7 @@ export default  class GUI extends Component {
 				disabled={!this.state.src}
 				onPress={() => {
 					this.muted = true;
+					this._setState( { _isMuted:true }  );
 				}}
 			/>
 		)
@@ -65,37 +67,36 @@ export default  class GUI extends Component {
 				disabled={!this.state.src}
 				onPress={() => {
 					this.muted = false;
+					this._setState( { _isMuted:false }  );
 			}}/>
 		)
 
 		return this.state._isMuted ? off : on;
 	}
 
-	shouldComponentUpdate() {
-		return !this.isSeeking;
-	}
 
 	render() {
 		return (
 			<View style={styles.container}>
 				{this._togglePlayBtn()}
 				<Text style={styles.currentTime}>{Moment(this.state._currentTime*1000).format('mm:ss')}</Text>
-				<Slider 
-					value={this.state._currentTime / this.state._duration}
-					style={styles.scrubBar}
+				<ScrubBar
+					style={ styles.scrubBar }
 					disabled={this.state._duration > 0 ? false : true}
-					
-					onValueChange={( value ) => { 
-						this.currentTime = value * this.state._duration 
-						this.isSeeking = true;
+					value={this.state._currentTime / this.state._duration}
+					onSlidingStart={ () => {
+						if (this.state._isPlaying ) {
+							this.setState({ wasPlaying: true });
+						}
+						this.pause();
 					}}
-
-					onSlidingComplete = { () => {
-						this.isSeeking = false;
-					}
-
-					}
-				/>
+					onSliderChange={ ( position ) => {
+						this.currentTime = position * this.state._duration;
+					}}
+					onSlidingComplete={ ( wasPlaying ) => {
+						this.state.wasPlaying && this.play();
+					}}
+				 />
 				<Text style={styles.currentTime}>{Moment(this._calculateRemainingDuration()).format('mm:ss')}</Text>
 				{this._toggleMuteBtn()}
 			</View> 

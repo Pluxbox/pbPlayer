@@ -87,7 +87,6 @@ export default class RNAudio extends Gui {
 	}
 
 	set muted ( bool ) {
-		this.state._isMuted = bool;
 		NativeRNAudio.muted( this.state._key, bool );
 	}
 
@@ -109,17 +108,13 @@ export default class RNAudio extends Gui {
 
 	play () {
 		!this.state._isLoaded && this._prepare();
-		this._setState( { _isPlaying:true }  )
-
 		NativeRNAudio.play( this.state._key );
 	}
 
 	pause () {
 		console.log("isNotPlaying");
-		this._setState( { _isPlaying:false }  )
 		NativeRNAudio.pause( this.state._key );
 	}
-
 
 
 	//Private fuctions
