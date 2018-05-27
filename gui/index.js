@@ -71,11 +71,11 @@ export default  class GUI extends Component {
 				{this._togglePlayBtn()}
 				<Text style={styles.currentTime}>{Moment(this.state._currentTime*1000).format('mm:ss')}</Text>
 				<Slider 
-					value={this.state._currentTime}
+					value={this.state._currentTime / this.state._duration}
 					style={styles.scrubBar}
 					disabled={this.state._duration > 0 ? false : true}
-					maximumValue={this.state._duration}
-					onValueChange={( value ) => { this.currentTime = value }}
+					
+					onValueChange={( value ) => { this.currentTime = value * this.state._duration }}
 				/>
 				<Text style={styles.currentTime}>{Moment(this._calculateRemainingDuration()).format('mm:ss')}</Text>
 				{this._toggleMuteBtn()}
