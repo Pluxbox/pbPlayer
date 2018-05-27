@@ -6,11 +6,7 @@ import {
 
   StyleSheet 
 } from "react-native";
-
 import ScrubBar from './scrubbar';
-
-console.log(ScrubBar)
-
 
 import Moment from 'moment';
 
@@ -85,7 +81,7 @@ export default  class GUI extends Component {
 					disabled={this.state._duration > 0 ? false : true}
 					value={this.state._currentTime / this.state._duration}
 					onSlidingStart={ () => {
-						if (this.state._isPlaying ) {
+						if ( this.state._isPlaying ) {
 							this.setState({ wasPlaying: true });
 						}
 						this.pause();
