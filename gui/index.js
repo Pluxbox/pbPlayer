@@ -3,7 +3,6 @@ import {
   View, 
   Text,
   Button,
-
   StyleSheet 
 } from "react-native";
 import ScrubBar from './scrubbar';

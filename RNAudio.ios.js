@@ -19,6 +19,8 @@ import Gui from './gui';
 const { NativeRNAudio } = NativeModules;
 const NativeRNAudioEmitter = new NativeEventEmitter(NativeRNAudio);
 
+let enableBackgroundModeIsSet = false;
+
 export default class RNAudio extends Gui {
 	
 	constructor( props ) {
@@ -56,7 +58,12 @@ export default class RNAudio extends Gui {
 	}
 
 	componentDidMount() {
+		
+		!enableBackgroundModeIsSet && NativeRNAudio.enableBackgroundMode();
+
+		enableBackgroundModeIsSet = true;
 		this.state._isComponent = true;
+		
 		this._prepare();	
 	}
 

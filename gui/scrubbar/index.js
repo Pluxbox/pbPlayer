@@ -52,26 +52,3 @@ export default class ScrubBar extends Component {
 		);
 	}
 };
-
-/*
-
-value={this.state._currentTime / this.state._duration}
-					style={styles.scrubBar}
-					disabled={this.state._duration > 0 ? false : true}
-					
-					onValueChange={( value ) => { 
-						this.currentTime = value * this.state._duration 
-						this.isSeeking = true;
-					}}
-
-					onSlidingComplete = { () => {
-						this.isSeeking = false;
-					}
-
-					}
-
-					*/
-
-// const styles = StyleSheet.create({
-
-// });

@@ -1,20 +1,13 @@
 #import "RNAudio.h"
 @import AVFoundation;
-
+@import MediaPlayer;
 
 @implementation NativeRNAudio {
   NSMutableDictionary* _playerPool;
-  // AVPlayerItem *currentItem;
   AVPlayer * playbackTimeObserver;
 }
 
 RCT_EXPORT_MODULE()
-
-
-- (NSArray<NSString *> *)supportedEvents
-{
-  return @[@"PlayerUpdate"];
-}
 
 -(NSMutableDictionary*) playerPool {
   if (!_playerPool) {
@@ -29,9 +22,28 @@ RCT_EXPORT_MODULE()
 
 
 RCT_EXPORT_METHOD(play:(nonnull NSNumber*)key ) {
+  
   AVPlayer* player = [self playerForKey:key];
   [player play];
   printf("[SPKRLOG] Play\n");
+  
+  MPNowPlayingInfoCenter *center = [MPNowPlayingInfoCenter defaultCenter];
+  
+  NSDictionary *info = @{
+                         MPMediaItemPropertyArtist: @"Test",
+                         MPMediaItemPropertyAlbumTitle: @"Test",
+                         MPMediaItemPropertyTitle:  @"Test",
+                         MPNowPlayingInfoPropertyPlaybackRate :@1.0f };
+  
+  center.nowPlayingInfo = info;
+  
+//  MPRemoteCommandCenter *remoteCenter = [MPRemoteCommandCenter sharedCommandCenter];
+  
+  [[MPRemoteCommandCenter sharedCommandCenter].playCommand addTarget:self action:@selector(play)];
+}
+
+-(void)play {
+  [MPRemoteCommandCenter sharedCommandCenter].playCommand.enabled = YES;
 }
 
 RCT_EXPORT_METHOD(pause:(nonnull NSNumber*)key ) {
@@ -46,11 +58,19 @@ RCT_EXPORT_METHOD(seek:(nonnull NSNumber*)key withValue:(nonnull NSNumber*)value
   printf("[SPKRLOG] Seek\n");
 }
 
-RCT_EXPORT_METHOD(muted:(nonnull NSNumber*)key withValue:(BOOL *)mute) {
+RCT_EXPORT_METHOD(muted:(nonnull NSNumber*)key withValue:(BOOL)mute) {
   AVPlayer* player = [self playerForKey:key];
   player.muted = mute;
   printf("[SPKRLOG] Mute\n");
 }
+
+
+RCT_EXPORT_METHOD(enableBackgroundMode) {
+  AVAudioSession *session = [AVAudioSession sharedInstance];
+  [session setCategory: AVAudioSessionCategoryPlayback error: nil];
+  [session setActive: YES error:nil];
+}
+
 
 RCT_EXPORT_METHOD(
     	prepare:(NSString*)fileName
@@ -58,7 +78,10 @@ RCT_EXPORT_METHOD(
       withCallback:(RCTResponseSenderBlock)callback
 	){
   
-  [[AVAudioSession sharedInstance] setCategory: AVAudioSessionCategoryPlayback error:nil];
+    
+  
+    // MPRemoteCommandCenter *remoteCenter = [MPRemoteCommandCenter sharedCommandCenter];
+  
   
  //  NSURL *url = [NSURL URLWithString:@"https://icecast.omroep.nl/radio1-bb-aac"];
 //   NSURL *url = [NSURL URLWithString:@"https://bitdash-a.akamaihd.net/content/sintel/hls/playlist.m3u8"];
@@ -76,6 +99,8 @@ RCT_EXPORT_METHOD(
     if (seconds != seconds) {
       seconds = 0;
     }
+
+    printf("[SPKRLOG] Player prepared\n");
   
     callback( @[ @{ @"_duration": @(seconds) } ] );
   }
@@ -119,5 +144,7 @@ RCT_EXPORT_METHOD(
 {
     return YES;
 }
+
+
 
 @end
