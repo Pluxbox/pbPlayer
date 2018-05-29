@@ -9,6 +9,11 @@
 
 RCT_EXPORT_MODULE()
 
+//- (dispatch_queue_t)methodQueue
+//{
+//  return dispatch_get_main_queue();
+//}
+
 -(NSMutableDictionary*) playerPool {
   if (!_playerPool) {
     _playerPool = [NSMutableDictionary new];
@@ -30,15 +35,14 @@ RCT_EXPORT_METHOD(play:(nonnull NSNumber*)key ) {
   MPNowPlayingInfoCenter *center = [MPNowPlayingInfoCenter defaultCenter];
   
   NSDictionary *info = @{
-                         MPMediaItemPropertyArtist: @"Test",
-                         MPMediaItemPropertyAlbumTitle: @"Test",
-                         MPMediaItemPropertyTitle:  @"Test",
+                         
+                         MPMediaItemPropertyTitle:  @"50 Essential Podcasts To Download Today",
+                         MPMediaItemPropertyArtist: @"Jennifer Clarkson",
+                         MPMediaItemPropertyAlbumTitle: @"Playlist: Startups",
                          MPNowPlayingInfoPropertyPlaybackRate :@1.0f };
   
   center.nowPlayingInfo = info;
-  
-//  MPRemoteCommandCenter *remoteCenter = [MPRemoteCommandCenter sharedCommandCenter];
-  
+
   [[MPRemoteCommandCenter sharedCommandCenter].playCommand addTarget:self action:@selector(play)];
 }
 
