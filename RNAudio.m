@@ -31,6 +31,18 @@ RCT_EXPORT_MODULE()
   return [[self playerPool] objectForKey:key];
 }
 
+- (void) toggleHandler:(MPRemoteCommand *) command withSelector:(SEL) selector enabled:(BOOL) enabled {
+  [command removeTarget:self action:selector];
+  if(enabled){
+    [command addTarget:self action:selector];
+  }
+  command.enabled = enabled;
+}
+
+
+
+
+
 
 RCT_EXPORT_METHOD(play:(nonnull NSNumber*)key ) {
   
@@ -39,6 +51,7 @@ RCT_EXPORT_METHOD(play:(nonnull NSNumber*)key ) {
   printf("[SPKRLOG] Play\n");
   
   MPNowPlayingInfoCenter *center = [MPNowPlayingInfoCenter defaultCenter];
+  MPRemoteCommandCenter *remoteCenter = [MPRemoteCommandCenter sharedCommandCenter];
   
   NSDictionary *info = @{
                          
@@ -48,12 +61,22 @@ RCT_EXPORT_METHOD(play:(nonnull NSNumber*)key ) {
                          MPNowPlayingInfoPropertyPlaybackRate :@1.0f };
   
   center.nowPlayingInfo = info;
-
-  [[MPRemoteCommandCenter sharedCommandCenter].playCommand addTarget:self action:@selector(play)];
+  
+  //Bind external displays
+  [self toggleHandler:remoteCenter.playCommand withSelector:@selector(play) enabled:YES];
+  [self toggleHandler:remoteCenter.pauseCommand withSelector:@selector(pause) enabled:YES];
 }
 
 -(void)play {
-  [MPRemoteCommandCenter sharedCommandCenter].playCommand.enabled = YES;
+  
+  printf("[SPKRLOG] Pressed play \n");
+//  [MPRemoteCommandCenter sharedCommandCenter].playCommand.enabled = YES;
+}
+
+-(void)pause {
+  
+  printf("[SPKRLOG] Pressed pause \n");
+  //  [MPRemoteCommandCenter sharedCommandCenter].playCommand.enabled = YES;
 }
 
 RCT_EXPORT_METHOD(pause:(nonnull NSNumber*)key ) {
