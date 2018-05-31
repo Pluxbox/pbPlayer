@@ -3,9 +3,8 @@
 #import <React/RCTBridgeModule.h>
 #import <React/RCTEventEmitter.h>
 
-//#import <Foundation/Foundation.h>
+#import <AVFoundation/AVFoundation.h>
 
-@interface NativeRNAudio : RCTEventEmitter <RCTBridgeModule>
-
+@interface NativeRNAudio : RCTEventEmitter <RCTBridgeModule, AVAudioPlayerDelegate>
 	@property (nonatomic, weak) NSNumber* _key;
 @end

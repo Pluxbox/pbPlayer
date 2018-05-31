@@ -1,5 +1,5 @@
 #import "RNAudio.h"
-@import AVFoundation;
+//@import AVFoundation;
 @import MediaPlayer;
 
 @implementation NativeRNAudio {
@@ -7,13 +7,15 @@
   AVPlayer * playbackTimeObserver;
 }
 
+@synthesize _key = _key;
+
+
 RCT_EXPORT_MODULE()
 
 - (dispatch_queue_t)methodQueue
 {
   return dispatch_get_main_queue();
 }
-
 
 -(NSArray<NSString *> *)supportedEvents
 {
@@ -39,22 +41,20 @@ RCT_EXPORT_MODULE()
   command.enabled = enabled;
 }
 
-
-
-
-
-
 RCT_EXPORT_METHOD(play:(nonnull NSNumber*)key ) {
   
   AVPlayer* player = [self playerForKey:key];
   [player play];
+  self._key = key;
+  
+  
   printf("[SPKRLOG] Play\n");
+  
   
   MPNowPlayingInfoCenter *center = [MPNowPlayingInfoCenter defaultCenter];
   MPRemoteCommandCenter *remoteCenter = [MPRemoteCommandCenter sharedCommandCenter];
   
   NSDictionary *info = @{
-                         
                          MPMediaItemPropertyTitle:  @"50 Essential Podcasts To Download Today",
                          MPMediaItemPropertyArtist: @"Jennifer Clarkson",
                          MPMediaItemPropertyAlbumTitle: @"Playlist: Startups",
@@ -67,17 +67,22 @@ RCT_EXPORT_METHOD(play:(nonnull NSNumber*)key ) {
   [self toggleHandler:remoteCenter.pauseCommand withSelector:@selector(pause) enabled:YES];
 }
 
+
+//External display functions
 -(void)play {
-  
-  printf("[SPKRLOG] Pressed play \n");
-//  [MPRemoteCommandCenter sharedCommandCenter].playCommand.enabled = YES;
+  AVPlayer* player = [self playerForKey:self._key];
+  [player play];
+  printf("[SPKRLOG] External Play \n");
 }
 
 -(void)pause {
-  
-  printf("[SPKRLOG] Pressed pause \n");
-  //  [MPRemoteCommandCenter sharedCommandCenter].playCommand.enabled = YES;
+  AVPlayer* player = [self playerForKey:self._key];
+  [player pause];
+  printf("[SPKRLOG] External Pause \n");
 }
+
+
+
 
 RCT_EXPORT_METHOD(pause:(nonnull NSNumber*)key ) {
   AVPlayer* player = [self playerForKey:key];
@@ -110,9 +115,6 @@ RCT_EXPORT_METHOD(
     	withKey:(nonnull NSNumber*)key
       withCallback:(RCTResponseSenderBlock)callback
 	){
-  
-    
-  
     // MPRemoteCommandCenter *remoteCenter = [MPRemoteCommandCenter sharedCommandCenter];
   
   
@@ -152,7 +154,6 @@ RCT_EXPORT_METHOD(
 }
 
 
-
 - (void)updateJSScope: (nonnull NSNumber*)key {
   
   AVPlayer* player = [self playerForKey:key];
@@ -160,10 +161,10 @@ RCT_EXPORT_METHOD(
   
   playbackTimeObserver = [ player addPeriodicTimeObserverForInterval:interval queue:NULL usingBlock:^(CMTime time) {
     
-    NSDictionary * data = @{
-                              @"_currentTime": [NSNumber numberWithFloat:CMTimeGetSeconds(time)],
-                              @"_key": key
-                            };
+  NSDictionary * data = @{
+                            @"_currentTime": [NSNumber numberWithFloat:CMTimeGetSeconds(time)],
+                            @"_key": key
+                          };
 
     [self sendEventWithName:@"PlayerUpdate" body: data ];
   }];
