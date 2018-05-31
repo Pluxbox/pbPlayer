@@ -54,6 +54,19 @@ RCT_EXPORT_MODULE()
   return [[self playerPool] objectForKey:key];
 }
 
+
+-(NSMutableDictionary*) nowPlayingPool {
+  if (!_nowPlayingPool) {
+    _nowPlayingPool = [NSMutableDictionary new];
+  }
+  return _nowPlayingPool;
+}
+
+-(NSMutableDictionary*) nowPlayingForKey:(nonnull NSNumber*)key {
+  return [[self nowPlayingPool] objectForKey:key];
+}
+
+
 - (void) toggleHandler:(MPRemoteCommand *) command withSelector:(SEL) selector enabled:(BOOL) enabled {
   [command removeTarget:self action:selector];
   if(enabled){
@@ -63,17 +76,18 @@ RCT_EXPORT_MODULE()
 }
 
 
-- (void) setNowPlaying:(NSDictionary *) details {
+- (void) setNowPlaying:(nonnull NSNumber*)key {
   
+  NSMutableDictionary* details = [self nowPlayingForKey:key];
   NSURL *imageURL = [NSURL URLWithString: [details objectForKey:@"cover"]];
   NSData *imageData = [NSData dataWithContentsOfURL:imageURL];
   UIImage *image = [UIImage imageWithData:imageData];
-  
+
   MPMediaItemArtwork *artwork = [[MPMediaItemArtwork alloc] initWithImage: image];
   MPNowPlayingInfoCenter *center = [MPNowPlayingInfoCenter defaultCenter];
   MPRemoteCommandCenter *remoteCenter = [MPRemoteCommandCenter sharedCommandCenter];
   NSMutableDictionary *onAirInfo = [[NSMutableDictionary alloc] init];
-  
+
   for (NSString *key in ONAIR_DICT) {
     if ([details objectForKey:key] != nil) {
       [onAirInfo setValue:[details objectForKey:key]  forKey:[ONAIR_DICT objectForKey:key]];
@@ -97,6 +111,7 @@ RCT_EXPORT_MODULE()
 -(void)play {
   AVPlayer* player = [self playerForKey:self._key];
   [player play];
+  [self setNowPlaying: _key];
   printf("[SPKRLOG] External Play \n");
 }
 
@@ -111,16 +126,14 @@ RCT_EXPORT_MODULE()
 }
 
 
-
 //JS functions
 RCT_EXPORT_METHOD(play:(nonnull NSNumber*)key ) {
-  
   AVPlayer* player = [self playerForKey:key];
   [player play];
+  [self setNowPlaying: key];
   self._key = key;
   printf("[SPKRLOG] Play\n");
 }
-
 
 RCT_EXPORT_METHOD(pause:(nonnull NSNumber*)key ) {
   AVPlayer* player = [self playerForKey:key];
@@ -175,13 +188,14 @@ RCT_EXPORT_METHOD(
                            @"title": @"50 Essential Podcasts To Download Today",
                            @"artist": @"Jennifer Clarkson",
                            @"album": @"Playlist: Startups",
-                           @"duration": @111.11f,
+                           @"duration": @(seconds),
                            @"cover": @"https://yourspeakr.com/images/thumb1_sm.png"
                          } ;
   
-  [self setNowPlaying: info];
+  //Now On Air information
+  [[self nowPlayingPool] setObject:info forKey:key];
   
-  printf("[SPKRLOG] Player prepared %f\n", (float)seconds);
+  printf("[SPKRLOG] Player prepared\n");
   
   //callback
   callback( @[ @{ @"_duration": @(seconds) } ] );
