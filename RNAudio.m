@@ -142,13 +142,20 @@
   printf("[SPKRLOG] External pp \n");
 }
 
+-(void)itemDidFinishPlaying {
+  printf("[SPKRLOG] Track Finished \n");
+  [[NSNotificationCenter defaultCenter] removeObserver:self];
+}
+
 RCT_EXPORT_MODULE()
 
 //JS functions
 RCT_EXPORT_METHOD(play:(nonnull NSNumber*)key ) {
-  [[AVAudioSession sharedInstance] setActive:YES error:nil];\
-  [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(audioSessionChangeObserver:) name:AVAudioSessionRouteChangeNotification object:nil];
   AVPlayer* player = [self playerForKey:key];
+  [[AVAudioSession sharedInstance] setActive:YES error:nil];
+  [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(audioSessionChangeObserver:) name:AVAudioSessionRouteChangeNotification object:nil];
+  [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(itemDidFinishPlaying) name:AVPlayerItemDidPlayToEndTimeNotification object:player.currentItem];
+  
   [player play];
   [self setNowPlaying: key];
   self._key = key;
