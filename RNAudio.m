@@ -54,13 +54,26 @@ RCT_EXPORT_METHOD(play:(nonnull NSNumber*)key ) {
   MPNowPlayingInfoCenter *center = [MPNowPlayingInfoCenter defaultCenter];
   MPRemoteCommandCenter *remoteCenter = [MPRemoteCommandCenter sharedCommandCenter];
   
+  NSURL *imageURL = [NSURL URLWithString:@"https://yourspeakr.com/images/thumb1_sm.png"];
+  NSData *imageData = [NSData dataWithContentsOfURL:imageURL];
+  UIImage *image = [UIImage imageWithData:imageData];
+  
+  
+  
+  MPMediaItemArtwork *artwork = [[MPMediaItemArtwork alloc] initWithImage: image];
+  
+  
+  
   NSDictionary *info = @{
                          MPMediaItemPropertyTitle:  @"50 Essential Podcasts To Download Today",
                          MPMediaItemPropertyArtist: @"Jennifer Clarkson",
                          MPMediaItemPropertyAlbumTitle: @"Playlist: Startups",
+                         MPMediaItemPropertyArtwork: artwork,
                          MPNowPlayingInfoPropertyPlaybackRate :@1.0f };
   
   center.nowPlayingInfo = info;
+  
+  
   
   //Bind external displays
   [self toggleHandler:remoteCenter.playCommand withSelector:@selector(play) enabled:YES];
