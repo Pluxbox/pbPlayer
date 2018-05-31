@@ -4,8 +4,29 @@
 
 @implementation NativeRNAudio {
   NSMutableDictionary* _playerPool;
+  NSMutableDictionary* _nowPlayingPool;
   AVPlayer * playbackTimeObserver;
 }
+
+
+//  NSDictionary *info = @{
+//                         MPMediaItemPropertyTitle: [bla valueForKey:@"bbb"], //@"50 Essential Podcasts To Download Today",
+//                         MPMediaItemPropertyArtist: @"Jennifer Clarkson",
+//                         MPMediaItemPropertyAlbumTitle: @"Playlist: Startups",
+//                         MPMediaItemPropertyArtwork: artwork,
+//                         MPMediaItemPropertyPlaybackDuration: @111.11f,
+////                         MPMediaItemPropertyPlaybackDuration: @(seconds),
+//                         //                         MPNowPlayingInfoPropertyElapsedPlaybackTime: @10,
+//                         MPNowPlayingInfoPropertyPlaybackRate: @1.0f };
+
+
+#define ONAIR_DICT @{\
+  @"title": MPMediaItemPropertyTitle, \
+  @"artist": MPMediaItemPropertyArtist, \
+  @"album": MPMediaItemPropertyAlbumTitle, \
+  @"duration": MPMediaItemPropertyPlaybackDuration, \
+}
+
 
 @synthesize _key = _key;
 
@@ -41,43 +62,34 @@ RCT_EXPORT_MODULE()
   command.enabled = enabled;
 }
 
-RCT_EXPORT_METHOD(play:(nonnull NSNumber*)key ) {
+
+- (void) setNowPlaying:(NSDictionary *) details {
   
-  AVPlayer* player = [self playerForKey:key];
-  [player play];
-  self._key = key;
-  
-  
-  printf("[SPKRLOG] Play\n");
-  
-  
-  MPNowPlayingInfoCenter *center = [MPNowPlayingInfoCenter defaultCenter];
-  MPRemoteCommandCenter *remoteCenter = [MPRemoteCommandCenter sharedCommandCenter];
-  
-  NSURL *imageURL = [NSURL URLWithString:@"https://yourspeakr.com/images/thumb1_sm.png"];
+  NSURL *imageURL = [NSURL URLWithString: [details objectForKey:@"cover"]];
   NSData *imageData = [NSData dataWithContentsOfURL:imageURL];
   UIImage *image = [UIImage imageWithData:imageData];
   
-  
-  
   MPMediaItemArtwork *artwork = [[MPMediaItemArtwork alloc] initWithImage: image];
+  MPNowPlayingInfoCenter *center = [MPNowPlayingInfoCenter defaultCenter];
+  MPRemoteCommandCenter *remoteCenter = [MPRemoteCommandCenter sharedCommandCenter];
+  NSMutableDictionary *onAirInfo = [[NSMutableDictionary alloc] init];
   
-  
-  
-  NSDictionary *info = @{
-                         MPMediaItemPropertyTitle:  @"50 Essential Podcasts To Download Today",
-                         MPMediaItemPropertyArtist: @"Jennifer Clarkson",
-                         MPMediaItemPropertyAlbumTitle: @"Playlist: Startups",
-                         MPMediaItemPropertyArtwork: artwork,
-                         MPNowPlayingInfoPropertyPlaybackRate :@1.0f };
-  
-  center.nowPlayingInfo = info;
-  
-  
-  
+  for (NSString *key in ONAIR_DICT) {
+    if ([details objectForKey:key] != nil) {
+      [onAirInfo setValue:[details objectForKey:key]  forKey:[ONAIR_DICT objectForKey:key]];
+    }
+  }
+
+  [onAirInfo setValue:artwork  forKey:MPMediaItemPropertyArtwork];
+
+  center.nowPlayingInfo = onAirInfo;
+
   //Bind external displays
   [self toggleHandler:remoteCenter.playCommand withSelector:@selector(play) enabled:YES];
   [self toggleHandler:remoteCenter.pauseCommand withSelector:@selector(pause) enabled:YES];
+  [self toggleHandler:remoteCenter.changePlaybackPositionCommand withSelector:@selector(changePlaybackPosition) enabled:YES];
+  
+  printf("[SPKRLOG] setNowPlaying\n");
 }
 
 
@@ -94,7 +106,20 @@ RCT_EXPORT_METHOD(play:(nonnull NSNumber*)key ) {
   printf("[SPKRLOG] External Pause \n");
 }
 
+-(void)changePlaybackPosition {
+  printf("[SPKRLOG] External pp \n");
+}
 
+
+
+//JS functions
+RCT_EXPORT_METHOD(play:(nonnull NSNumber*)key ) {
+  
+  AVPlayer* player = [self playerForKey:key];
+  [player play];
+  self._key = key;
+  printf("[SPKRLOG] Play\n");
+}
 
 
 RCT_EXPORT_METHOD(pause:(nonnull NSNumber*)key ) {
@@ -128,30 +153,39 @@ RCT_EXPORT_METHOD(
     	withKey:(nonnull NSNumber*)key
       withCallback:(RCTResponseSenderBlock)callback
 	){
-    // MPRemoteCommandCenter *remoteCenter = [MPRemoteCommandCenter sharedCommandCenter];
   
-  
- //  NSURL *url = [NSURL URLWithString:@"https://icecast.omroep.nl/radio1-bb-aac"];
-//   NSURL *url = [NSURL URLWithString:@"https://bitdash-a.akamaihd.net/content/sintel/hls/playlist.m3u8"];
+  //  NSURL *url = [NSURL URLWithString:@"https://icecast.omroep.nl/radio1-bb-aac"];
+  //   NSURL *url = [NSURL URLWithString:@"https://bitdash-a.akamaihd.net/content/sintel/hls/playlist.m3u8"];
   // NSURL *url = [NSURL URLWithString:@"https://yourspeakr.com/audio/RadiopodcastDennisLaupman.mp3"];
 
-  	AVPlayer * player = [[AVPlayer alloc] initWithURL:[ NSURL URLWithString:fileName ] ];
-  	[player addObserver:self forKeyPath:@"status" options:0 context:nil];
+  AVPlayer * player = [[AVPlayer alloc] initWithURL:[ NSURL URLWithString:fileName ] ];
+  [player addObserver:self forKeyPath:@"status" options:0 context:nil];
 
-    [[self playerPool] setObject:player forKey:key];
-    [self updateJSScope: key];
+  [[self playerPool] setObject:player forKey:key];
+  [self updateJSScope: key];
 
-    CMTime duration = player.currentItem.asset.duration;
-    float seconds = CMTimeGetSeconds(duration);
-  
-    if (seconds != seconds) {
-      seconds = 0;
-    }
+  CMTime duration = player.currentItem.asset.duration;
+  float seconds = CMTimeGetSeconds(duration);
 
-    printf("[SPKRLOG] Player prepared\n");
-  
-    callback( @[ @{ @"_duration": @(seconds) } ] );
+  if (seconds != seconds) {
+    seconds = 0;
   }
+
+  NSDictionary *info = @{
+                           @"title": @"50 Essential Podcasts To Download Today",
+                           @"artist": @"Jennifer Clarkson",
+                           @"album": @"Playlist: Startups",
+                           @"duration": @111.11f,
+                           @"cover": @"https://yourspeakr.com/images/thumb1_sm.png"
+                         } ;
+  
+  [self setNowPlaying: info];
+  
+  printf("[SPKRLOG] Player prepared %f\n", (float)seconds);
+  
+  //callback
+  callback( @[ @{ @"_duration": @(seconds) } ] );
+}
 
 - (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object
                         change:(NSDictionary *)change context:(void *)context {
