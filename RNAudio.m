@@ -8,18 +8,6 @@
   AVPlayer * playbackTimeObserver;
 }
 
-
-//  NSDictionary *info = @{
-//                         MPMediaItemPropertyTitle: [bla valueForKey:@"bbb"], //@"50 Essential Podcasts To Download Today",
-//                         MPMediaItemPropertyArtist: @"Jennifer Clarkson",
-//                         MPMediaItemPropertyAlbumTitle: @"Playlist: Startups",
-//                         MPMediaItemPropertyArtwork: artwork,
-//                         MPMediaItemPropertyPlaybackDuration: @111.11f,
-////                         MPMediaItemPropertyPlaybackDuration: @(seconds),
-//                         //                         MPNowPlayingInfoPropertyElapsedPlaybackTime: @10,
-//                         MPNowPlayingInfoPropertyPlaybackRate: @1.0f };
-
-
 #define ONAIR_DICT @{\
   @"title": MPMediaItemPropertyTitle, \
   @"artist": MPMediaItemPropertyArtist, \
@@ -30,8 +18,37 @@
 
 @synthesize _key = _key;
 
+- (void)audioSessionChangeObserver:(NSNotification *)notification{
+  NSDictionary* userInfo = notification.userInfo;
+  AVAudioSessionRouteChangeReason audioSessionRouteChangeReason = [userInfo[@"AVAudioSessionRouteChangeReasonKey"] longValue];
+  AVAudioSessionInterruptionType audioSessionInterruptionType   = [userInfo[@"AVAudioSessionInterruptionTypeKey"] longValue];
+  AVPlayer* player = [self playerForKey:self._key];
+  if (audioSessionRouteChangeReason == AVAudioSessionRouteChangeReasonNewDeviceAvailable){
+    if (player) {
+      [player play];
+    }
+  }
+  if (audioSessionInterruptionType == AVAudioSessionInterruptionTypeEnded){
+    if (player && (player.rate != 0) && (player.error == nil)) {
+      [player play];
+    }
+  }
+  if (audioSessionRouteChangeReason == AVAudioSessionRouteChangeReasonOldDeviceUnavailable){
+    if (player) {
+      [player pause];
+    }
+  }
+  if (audioSessionInterruptionType == AVAudioSessionInterruptionTypeBegan){
+    if (player) {
+      [player pause];
+    }
+  }
+ 
+  
 
-RCT_EXPORT_MODULE()
+  
+  printf("[SPKRLOG] Changed Route\n");
+}
 
 - (dispatch_queue_t)methodQueue
 {
@@ -65,7 +82,6 @@ RCT_EXPORT_MODULE()
 -(NSMutableDictionary*) nowPlayingForKey:(nonnull NSNumber*)key {
   return [[self nowPlayingPool] objectForKey:key];
 }
-
 
 - (void) toggleHandler:(MPRemoteCommand *) command withSelector:(SEL) selector enabled:(BOOL) enabled {
   [command removeTarget:self action:selector];
@@ -107,6 +123,7 @@ RCT_EXPORT_MODULE()
 }
 
 
+
 //External display functions
 -(void)play {
   AVPlayer* player = [self playerForKey:self._key];
@@ -125,9 +142,12 @@ RCT_EXPORT_MODULE()
   printf("[SPKRLOG] External pp \n");
 }
 
+RCT_EXPORT_MODULE()
 
 //JS functions
 RCT_EXPORT_METHOD(play:(nonnull NSNumber*)key ) {
+  [[AVAudioSession sharedInstance] setActive:YES error:nil];\
+  [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(audioSessionChangeObserver:) name:AVAudioSessionRouteChangeNotification object:nil];
   AVPlayer* player = [self playerForKey:key];
   [player play];
   [self setNowPlaying: key];
