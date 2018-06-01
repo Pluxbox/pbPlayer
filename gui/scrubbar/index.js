@@ -31,24 +31,22 @@ export default class ScrubBar extends Component {
 
 	render() {
 		return (
-				<Slider 
-					style={[ this.props.style ]}
-					value={ this.state.value }
-					disabled={this.state.disabled}
-					onValueChange={( value ) => { 
-						!this.state.isSeeking && this.props.onSlidingStart()
-						this.props.onSliderChange( value ); 
-						this.setState( {
-							isSeeking: true,
-						});
-					}}
-					onSlidingComplete = { () => {
-						this.props.onSlidingComplete();
-						this.setState( {
-							isSeeking: false,
-						});
-					}}
-				/>
+			<Slider 
+				style={[ this.props.style ]}
+				value={ this.state.value }
+				disabled={this.state.disabled}
+				onValueChange={( value ) => { 
+					this.props.onSliderChange( value ); 
+					this.setState( {
+						isSeeking: true,
+					});
+				}}
+				onSlidingComplete = { ( value ) => {
+					this.setState( {
+						isSeeking: false,
+					});
+				}}
+			/>
 		);
 	}
 };

@@ -144,7 +144,6 @@ export default class RNAudio extends Gui {
 			}
 		);
 
-
 		this.state._isLoaded = true;	
 
 		if(this.state.autoplay && this.state._isComponent) {

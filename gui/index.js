@@ -79,17 +79,8 @@ export default  class GUI extends Component {
 					style={ styles.scrubBar }
 					disabled={this.state._duration > 0 ? false : true}
 					value={this.state._currentTime / this.state._duration}
-					onSlidingStart={ () => {
-						if ( this.state._isPlaying ) {
-							this.setState({ wasPlaying: true });
-						}
-						this.pause();
-					}}
 					onSliderChange={ ( position ) => {
 						this.currentTime = position * this.state._duration;
-					}}
-					onSlidingComplete={ ( wasPlaying ) => {
-						this.state.wasPlaying && this.play();
 					}}
 				 />
 				<Text style={styles.currentTime}>{Moment(this._calculateRemainingDuration()).format('mm:ss')}</Text>
