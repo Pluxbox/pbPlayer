@@ -25,7 +25,7 @@ export default  class GUI extends Component {
 				disabled={!this.state.src}
 				onPress={() => {
 					this.play();
-					this._setState( { _isPlaying:true }  );
+					// this._setState( { _isPlaying:true }  );
 				}}
 			/>
 		)
@@ -36,7 +36,7 @@ export default  class GUI extends Component {
 				disabled={!this.state.src}
 				onPress={() => {
 					this.pause();
-					this._setState( { _isPlaying:false } );
+					// this._setState( { _isPlaying:false } );
 			}}/>
 		)
 

@@ -52,9 +52,11 @@ export default class RNAudio extends Gui {
 			'PlayerUpdate',
 			( data ) => {
 				if(this.state._key == data._key){
-					this._setState( { _currentTime: data._currentTime  }  )
+					this._setState( { 
+						_currentTime: data._currentTime,
+						_isPlaying: data._isPlaying,
+					});
 
-					console.log(data)
 				}
 			}
 		);

@@ -2,6 +2,7 @@
 //@import AVFoundation;
 @import MediaPlayer;
 
+
 @implementation NativeRNAudio {
   NSMutableDictionary* _playerPool;
   NSMutableDictionary* _nowPlayingPool;
@@ -15,6 +16,22 @@
   @"duration": MPMediaItemPropertyPlaybackDuration, \
   @"elapsedTime": MPNowPlayingInfoPropertyElapsedPlaybackTime, \
 }
+
+
+
+
+//extension  {
+
+//  var isPlaying: Bool {
+//    if (self.rate != 0 && self.error == nil) {
+//      return true
+//    } else {
+//      return false
+//    }
+//  }
+  
+//}
+
 
 
 @synthesize _key = _key;
@@ -251,10 +268,21 @@ RCT_EXPORT_METHOD(
   CMTime interval = CMTimeMakeWithSeconds(.25, NSEC_PER_SEC); // 1 second
   
   playbackTimeObserver = [ player addPeriodicTimeObserverForInterval:interval queue:NULL usingBlock:^(CMTime time) {
+
+    BOOL isPlaying = (player.rate != 0 && player.error == nil);
     
+//    var isPlaying: Bool {
+//      if (self.rate != 0 && self.error == nil) {
+//        return true
+//      } else {
+//        return false
+//      }
+//    }
+//
   NSDictionary * data = @{
                             @"_currentTime": [NSNumber numberWithFloat:CMTimeGetSeconds(time)],
                             @"_key": key,
+                            @"_isPlaying": @(isPlaying),
                             @"_isEnded": @true
                           };
 
