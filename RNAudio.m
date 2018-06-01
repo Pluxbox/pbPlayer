@@ -89,46 +89,25 @@
   command.enabled = enabled;
 }
 
-
-
-
 - (void) updateNowPlaying:(NSDictionary *) originalDetails {
-  
-  AVPlayer* player = [self playerForKey:self._key];
   MPNowPlayingInfoCenter *center = [MPNowPlayingInfoCenter defaultCenter];
   NSMutableDictionary *onAirInfo = [[NSMutableDictionary alloc] initWithDictionary: center.nowPlayingInfo];
   NSMutableDictionary *details = [originalDetails mutableCopy];
-  
   for (NSString *key in ONAIR_DICT) {
     if ([details objectForKey:key] != nil) {
       [onAirInfo setValue:[details objectForKey:key]  forKey:[ONAIR_DICT objectForKey:key]];
     }
   }
-  
   center.nowPlayingInfo = onAirInfo;
-  
-  printf("[SPKRLOG] External Pause \n");
-  
-//  MPNowPlayingInfoCenter *center = [MPNowPlayingInfoCenter defaultCenter];
-//  NSMutableDictionary *details = [originalDetails mutableCopy];
-//
-//  NSMutableDictionary *onAirInfo = [[NSMutableDictionary alloc] initWithDictionary: center.nowPlayingInfo];
-//
-//  for (NSString *key in ONAIR_DICT) {
-//    if ([details objectForKey:key] != nil) {
-//      [onAirInfo setValue:[details objectForKey:key]  forKey:[ONAIR_DICT objectForKey:key]];
-//    }
-//  }
-//
-//  center.nowPlayingInfo = onAirInfo;
-  printf("[SPKRLOG] UPdate Now Playing\n");
+  printf("[SPKRLOG] Update Now Playing\n");
 }
 
 
 
-
-
 - (void) setNowPlaying:(nonnull NSNumber*)key {
+  
+  AVPlayer* player = [self playerForKey:key];
+  
   NSMutableDictionary* details = [self nowPlayingForKey:key];
   NSURL *imageURL = [NSURL URLWithString: [details objectForKey:@"cover"]];
   NSData *imageData = [NSData dataWithContentsOfURL:imageURL];
@@ -141,8 +120,6 @@
   MPRemoteCommandCenter *remoteCenter = [MPRemoteCommandCenter sharedCommandCenter];
   NSMutableDictionary *onAirInfo = [[NSMutableDictionary alloc] init];
   
-//  AVPlayer* player = [self playerForKey:key];
-
   
   for (NSString *key in ONAIR_DICT) {
     if ([details objectForKey:key] != nil) {
@@ -151,9 +128,8 @@
   }
 
   //Set Elapse time
-//  [onAirInfo setValue:[NSNumber numberWithFloat:CMTimeGetSeconds(player.currentItem.currentTime)] forKey:MPNowPlayingInfoPropertyElapsedPlaybackTime];
-  
-
+  [onAirInfo setValue:@1  forKey:MPNowPlayingInfoPropertyPlaybackRate];
+  [onAirInfo setValue:[NSNumber numberWithFloat:CMTimeGetSeconds(player.currentItem.currentTime)] forKey:MPNowPlayingInfoPropertyElapsedPlaybackTime];
   [onAirInfo setValue:artwork  forKey:MPMediaItemPropertyArtwork];
 
   center.nowPlayingInfo = onAirInfo;
@@ -190,19 +166,10 @@
 -(void)changePlaybackPosition:(MPChangePlaybackPositionCommandEvent*)event {
   AVPlayer* player = [self playerForKey:_key];
   [player.currentItem seekToTime:CMTimeMakeWithSeconds( (float) event.positionTime, 1)];
-//
-//  MPNowPlayingInfoCenter *center = [MPNowPlayingInfoCenter defaultCenter];
-//  center.nowPlayingInfo = @{
-//                            MPNowPlayingInfoPropertyPlaybackRate: @1,
-//                            MPNowPlayingInfoPropertyElapsedPlaybackTime: [NSNumber numberWithFloat: event.positionTime],
-//                            MPMediaItemPropertyPlaybackDuration:@2200
-//                            };
-//  
   [self updateNowPlaying:@{
                            @"elapsedTime": [NSNumber numberWithFloat: event.positionTime],
                            @"speed": @0,
                            }];
-
   printf("[SPKRLOG] External scrubbar\n");
 }
 
@@ -219,16 +186,26 @@ RCT_EXPORT_METHOD(play:(nonnull NSNumber*)key ) {
   [[AVAudioSession sharedInstance] setActive:YES error:nil];
   [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(audioSessionChangeObserver:) name:AVAudioSessionRouteChangeNotification object:nil];
   [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(itemDidFinishPlaying) name:AVPlayerItemDidPlayToEndTimeNotification object:player.currentItem];
-  
   [player play];
-  [self setNowPlaying: key];
   self._key = key;
+  [self setNowPlaying: key];
+//  [self updateNowPlaying:@{
+//                           @"elapsedTime": [NSNumber numberWithFloat:CMTimeGetSeconds(player.currentItem.currentTime)],
+//                           @"speed": @1,
+//                           }];
+//
   printf("[SPKRLOG] Play\n");
 }
 
 RCT_EXPORT_METHOD(pause:(nonnull NSNumber*)key ) {
   AVPlayer* player = [self playerForKey:key];
   [player pause];
+  [self updateNowPlaying:@{
+                           @"elapsedTime": [NSNumber numberWithFloat:CMTimeGetSeconds(player.currentItem.currentTime)],
+                           @"speed": @0,
+                           }];
+
+
 	printf("[SPKRLOG] Pausxde\n");
 }
 
@@ -301,7 +278,7 @@ RCT_EXPORT_METHOD(
 - (void)updateJSScope: (nonnull NSNumber*)key {
   
   AVPlayer* player = [self playerForKey:key];
-  CMTime interval = CMTimeMakeWithSeconds(.25, NSEC_PER_SEC); // 1 second
+  CMTime interval = CMTimeMakeWithSeconds(1, NSEC_PER_SEC); // 1 second
   
   playbackTimeObserver = [ player addPeriodicTimeObserverForInterval:interval queue:NULL usingBlock:^(CMTime time) {
 
