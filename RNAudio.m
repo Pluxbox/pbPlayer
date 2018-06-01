@@ -15,6 +15,7 @@
   @"album": MPMediaItemPropertyAlbumTitle, \
   @"duration": MPMediaItemPropertyPlaybackDuration, \
   @"elapsedTime": MPNowPlayingInfoPropertyElapsedPlaybackTime, \
+  @"speed": MPNowPlayingInfoPropertyPlaybackRate \
 }
 
 @synthesize _key = _key;
@@ -88,22 +89,44 @@
   command.enabled = enabled;
 }
 
+
+
+
 - (void) updateNowPlaying:(NSDictionary *) originalDetails {
   
+  AVPlayer* player = [self playerForKey:self._key];
   MPNowPlayingInfoCenter *center = [MPNowPlayingInfoCenter defaultCenter];
-  NSMutableDictionary *details = [originalDetails mutableCopy];
-
   NSMutableDictionary *onAirInfo = [[NSMutableDictionary alloc] initWithDictionary: center.nowPlayingInfo];
+  NSMutableDictionary *details = [originalDetails mutableCopy];
   
   for (NSString *key in ONAIR_DICT) {
     if ([details objectForKey:key] != nil) {
       [onAirInfo setValue:[details objectForKey:key]  forKey:[ONAIR_DICT objectForKey:key]];
     }
   }
-
+  
   center.nowPlayingInfo = onAirInfo;
+  
+  printf("[SPKRLOG] External Pause \n");
+  
+//  MPNowPlayingInfoCenter *center = [MPNowPlayingInfoCenter defaultCenter];
+//  NSMutableDictionary *details = [originalDetails mutableCopy];
+//
+//  NSMutableDictionary *onAirInfo = [[NSMutableDictionary alloc] initWithDictionary: center.nowPlayingInfo];
+//
+//  for (NSString *key in ONAIR_DICT) {
+//    if ([details objectForKey:key] != nil) {
+//      [onAirInfo setValue:[details objectForKey:key]  forKey:[ONAIR_DICT objectForKey:key]];
+//    }
+//  }
+//
+//  center.nowPlayingInfo = onAirInfo;
   printf("[SPKRLOG] UPdate Now Playing\n");
 }
+
+
+
+
 
 - (void) setNowPlaying:(nonnull NSNumber*)key {
   NSMutableDictionary* details = [self nowPlayingForKey:key];
@@ -120,8 +143,6 @@
   
 //  AVPlayer* player = [self playerForKey:key];
 
-  //Set Elapse time
-//  [onAirInfo setValue:[NSNumber numberWithFloat:CMTimeGetSeconds(player.currentItem.currentTime)] forKey:MPNowPlayingInfoPropertyElapsedPlaybackTime];
   
   for (NSString *key in ONAIR_DICT) {
     if ([details objectForKey:key] != nil) {
@@ -129,6 +150,9 @@
     }
   }
 
+  //Set Elapse time
+//  [onAirInfo setValue:[NSNumber numberWithFloat:CMTimeGetSeconds(player.currentItem.currentTime)] forKey:MPNowPlayingInfoPropertyElapsedPlaybackTime];
+  
 
   [onAirInfo setValue:artwork  forKey:MPMediaItemPropertyArtwork];
 
@@ -146,19 +170,39 @@
 -(void)play {
   AVPlayer* player = [self playerForKey:self._key];
   [player play];
-//  [self setNowPlaying: _key];
+  [self updateNowPlaying:@{
+                           @"elapsedTime": [NSNumber numberWithFloat:CMTimeGetSeconds(player.currentItem.currentTime)],
+                           @"speed": @1,
+                           }];
   printf("[SPKRLOG] External Play \n");
 }
 
 -(void)pause {
   AVPlayer* player = [self playerForKey:self._key];
   [player pause];
+  [self updateNowPlaying:@{
+                           @"elapsedTime": [NSNumber numberWithFloat:CMTimeGetSeconds(player.currentItem.currentTime)],
+                           @"speed": @0,
+                           }];
   printf("[SPKRLOG] External Pause \n");
 }
 
 -(void)changePlaybackPosition:(MPChangePlaybackPositionCommandEvent*)event {
   AVPlayer* player = [self playerForKey:_key];
   [player.currentItem seekToTime:CMTimeMakeWithSeconds( (float) event.positionTime, 1)];
+//
+//  MPNowPlayingInfoCenter *center = [MPNowPlayingInfoCenter defaultCenter];
+//  center.nowPlayingInfo = @{
+//                            MPNowPlayingInfoPropertyPlaybackRate: @1,
+//                            MPNowPlayingInfoPropertyElapsedPlaybackTime: [NSNumber numberWithFloat: event.positionTime],
+//                            MPMediaItemPropertyPlaybackDuration:@2200
+//                            };
+//  
+  [self updateNowPlaying:@{
+                           @"elapsedTime": [NSNumber numberWithFloat: event.positionTime],
+                           @"speed": @0,
+                           }];
+
   printf("[SPKRLOG] External scrubbar\n");
 }
 
@@ -185,14 +229,14 @@ RCT_EXPORT_METHOD(play:(nonnull NSNumber*)key ) {
 RCT_EXPORT_METHOD(pause:(nonnull NSNumber*)key ) {
   AVPlayer* player = [self playerForKey:key];
   [player pause];
-	printf("[SPKRLOG] Pause\n");
+	printf("[SPKRLOG] Pausxde\n");
 }
 
 RCT_EXPORT_METHOD(seek:(nonnull NSNumber*)key withValue:(nonnull NSNumber*)value) {
   AVPlayer* player = [self playerForKey:key];
   [player.currentItem seekToTime:CMTimeMakeWithSeconds( [value floatValue], 1)];
-  NSDictionary *info = @{ @"elapsedTime": value };
-  [self updateNowPlaying:info];
+//  NSDictionary *info = @{ @"elapsedTime": [NSNumber numberWithFloat:CMTimeGetSeconds(player.currentItem.currentTime)] };
+//  [self updateNowPlaying:info];
   printf("[SPKRLOG] Seek\n");
 }
 
