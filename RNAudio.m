@@ -13,6 +13,7 @@
   @"artist": MPMediaItemPropertyArtist, \
   @"album": MPMediaItemPropertyAlbumTitle, \
   @"duration": MPMediaItemPropertyPlaybackDuration, \
+  @"elapsedTime": MPNowPlayingInfoPropertyElapsedPlaybackTime, \
 }
 
 
@@ -43,10 +44,6 @@
       [player pause];
     }
   }
- 
-  
-
-  
   printf("[SPKRLOG] Changed Route\n");
 }
 
@@ -91,7 +88,6 @@
   command.enabled = enabled;
 }
 
-
 - (void) setNowPlaying:(nonnull NSNumber*)key {
   
   NSMutableDictionary* details = [self nowPlayingForKey:key];
@@ -103,7 +99,12 @@
   MPNowPlayingInfoCenter *center = [MPNowPlayingInfoCenter defaultCenter];
   MPRemoteCommandCenter *remoteCenter = [MPRemoteCommandCenter sharedCommandCenter];
   NSMutableDictionary *onAirInfo = [[NSMutableDictionary alloc] init];
+  
+  AVPlayer* player = [self playerForKey:key];
 
+  //Set Elapse time
+  [onAirInfo setValue:[NSNumber numberWithFloat:CMTimeGetSeconds(player.currentItem.currentTime)] forKey:MPNowPlayingInfoPropertyElapsedPlaybackTime];
+  
   for (NSString *key in ONAIR_DICT) {
     if ([details objectForKey:key] != nil) {
       [onAirInfo setValue:[details objectForKey:key]  forKey:[ONAIR_DICT objectForKey:key]];
@@ -118,11 +119,8 @@
   [self toggleHandler:remoteCenter.playCommand withSelector:@selector(play) enabled:YES];
   [self toggleHandler:remoteCenter.pauseCommand withSelector:@selector(pause) enabled:YES];
   [self toggleHandler:remoteCenter.changePlaybackPositionCommand withSelector:@selector(changePlaybackPosition:) enabled:YES];
-
-  
   printf("[SPKRLOG] setNowPlaying\n");
 }
-
 
 
 //External display functions
@@ -174,6 +172,8 @@ RCT_EXPORT_METHOD(pause:(nonnull NSNumber*)key ) {
 RCT_EXPORT_METHOD(seek:(nonnull NSNumber*)key withValue:(nonnull NSNumber*)value) {
   AVPlayer* player = [self playerForKey:key];
   [player.currentItem seekToTime:CMTimeMakeWithSeconds( [value floatValue], 1)];
+//  NSDictionary *info = @{ @"elapsedTime": @1000 };
+//  [self updateNowPlaying:info];
   printf("[SPKRLOG] Seek\n");
 }
 
