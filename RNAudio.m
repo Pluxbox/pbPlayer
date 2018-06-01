@@ -141,11 +141,8 @@
 
 -(void)changePlaybackPosition:(MPChangePlaybackPositionCommandEvent*)event {
   AVPlayer* player = [self playerForKey:_key];
-  
-    float f = (float) event.positionTime;
-  
-  [player.currentItem seekToTime:CMTimeMakeWithSeconds( f, 1)];
-  printf("[SPKRLOG] External pp %f \n", f  );
+  [player.currentItem seekToTime:CMTimeMakeWithSeconds( (float) event.positionTime, 1)];
+  printf("[SPKRLOG] External scrubbar\n");
 }
 
 -(void)itemDidFinishPlaying {
