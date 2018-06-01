@@ -17,23 +17,6 @@
   @"elapsedTime": MPNowPlayingInfoPropertyElapsedPlaybackTime, \
 }
 
-
-
-
-//extension  {
-
-//  var isPlaying: Bool {
-//    if (self.rate != 0 && self.error == nil) {
-//      return true
-//    } else {
-//      return false
-//    }
-//  }
-  
-//}
-
-
-
 @synthesize _key = _key;
 
 - (void)audioSessionChangeObserver:(NSNotification *)notification{
@@ -105,6 +88,23 @@
   command.enabled = enabled;
 }
 
+- (void) updateNowPlaying:(NSDictionary *) originalDetails {
+  
+  MPNowPlayingInfoCenter *center = [MPNowPlayingInfoCenter defaultCenter];
+  NSMutableDictionary *details = [originalDetails mutableCopy];
+
+  NSMutableDictionary *onAirInfo = [[NSMutableDictionary alloc] initWithDictionary: center.nowPlayingInfo];
+  
+  for (NSString *key in ONAIR_DICT) {
+    if ([details objectForKey:key] != nil) {
+      [onAirInfo setValue:[details objectForKey:key]  forKey:[ONAIR_DICT objectForKey:key]];
+    }
+  }
+
+  center.nowPlayingInfo = onAirInfo;
+  printf("[SPKRLOG] UPdate Now Playing\n");
+}
+
 - (void) setNowPlaying:(nonnull NSNumber*)key {
   
   NSMutableDictionary* details = [self nowPlayingForKey:key];
@@ -120,7 +120,7 @@
   AVPlayer* player = [self playerForKey:key];
 
   //Set Elapse time
-  [onAirInfo setValue:[NSNumber numberWithFloat:CMTimeGetSeconds(player.currentItem.currentTime)] forKey:MPNowPlayingInfoPropertyElapsedPlaybackTime];
+//  [onAirInfo setValue:[NSNumber numberWithFloat:CMTimeGetSeconds(player.currentItem.currentTime)] forKey:MPNowPlayingInfoPropertyElapsedPlaybackTime];
   
   for (NSString *key in ONAIR_DICT) {
     if ([details objectForKey:key] != nil) {
@@ -136,7 +136,7 @@
   [self toggleHandler:remoteCenter.playCommand withSelector:@selector(play) enabled:YES];
   [self toggleHandler:remoteCenter.pauseCommand withSelector:@selector(pause) enabled:YES];
   [self toggleHandler:remoteCenter.changePlaybackPositionCommand withSelector:@selector(changePlaybackPosition:) enabled:YES];
-  printf("[SPKRLOG] setNowPlaying\n");
+  printf("[SPKRLOG] Set Now Playing\n");
 }
 
 
@@ -189,8 +189,8 @@ RCT_EXPORT_METHOD(pause:(nonnull NSNumber*)key ) {
 RCT_EXPORT_METHOD(seek:(nonnull NSNumber*)key withValue:(nonnull NSNumber*)value) {
   AVPlayer* player = [self playerForKey:key];
   [player.currentItem seekToTime:CMTimeMakeWithSeconds( [value floatValue], 1)];
-//  NSDictionary *info = @{ @"elapsedTime": @1000 };
-//  [self updateNowPlaying:info];
+  NSDictionary *info = @{ @"elapsedTime": [NSNumber numberWithFloat:CMTimeGetSeconds(player.currentItem.currentTime)] };
+  [self updateNowPlaying:info];
   printf("[SPKRLOG] Seek\n");
 }
 
@@ -199,7 +199,6 @@ RCT_EXPORT_METHOD(muted:(nonnull NSNumber*)key withValue:(BOOL)mute) {
   player.muted = mute;
   printf("[SPKRLOG] Mute\n");
 }
-
 
 RCT_EXPORT_METHOD(enableBackgroundMode) {
   AVAudioSession *session = [AVAudioSession sharedInstance];
@@ -269,20 +268,10 @@ RCT_EXPORT_METHOD(
   
   playbackTimeObserver = [ player addPeriodicTimeObserverForInterval:interval queue:NULL usingBlock:^(CMTime time) {
 
-    BOOL isPlaying = (player.rate != 0 && player.error == nil);
-    
-//    var isPlaying: Bool {
-//      if (self.rate != 0 && self.error == nil) {
-//        return true
-//      } else {
-//        return false
-//      }
-//    }
-//
   NSDictionary * data = @{
                             @"_currentTime": [NSNumber numberWithFloat:CMTimeGetSeconds(time)],
                             @"_key": key,
-                            @"_isPlaying": @(isPlaying),
+                            @"_isPlaying": @(player.rate != 0 && player.error == nil),
                             @"_isEnded": @true
                           };
 
