@@ -204,16 +204,19 @@ RCT_EXPORT_METHOD(pause:(nonnull NSNumber*)key ) {
                            @"elapsedTime": [NSNumber numberWithFloat:CMTimeGetSeconds(player.currentItem.currentTime)],
                            @"speed": @0,
                            }];
-
-
 	printf("[SPKRLOG] Pausxde\n");
 }
 
 RCT_EXPORT_METHOD(seek:(nonnull NSNumber*)key withValue:(nonnull NSNumber*)value) {
   AVPlayer* player = [self playerForKey:key];
   [player.currentItem seekToTime:CMTimeMakeWithSeconds( [value floatValue], 1)];
-//  NSDictionary *info = @{ @"elapsedTime": [NSNumber numberWithFloat:CMTimeGetSeconds(player.currentItem.currentTime)] };
-//  [self updateNowPlaying:info];
+  //@"elapsedTime": [NSNumber numberWithFloat: event.positionTime],
+  
+  
+  [self updateNowPlaying:@{
+                           @"elapsedTime": [NSNumber numberWithFloat: [value floatValue]],
+                           @"speed": @0,
+                           }];
   printf("[SPKRLOG] Seek\n");
 }
 
