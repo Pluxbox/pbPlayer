@@ -25,11 +25,11 @@ export default class RNAudio extends Gui {
 	
 	constructor( props ) {
 		super( props );
-
 		this.state = Object.assign ({
 			
 			//Public vars
 			src: null,
+			cover: null,
 
 			//Callbacks
 			autoplay: false,
@@ -46,7 +46,7 @@ export default class RNAudio extends Gui {
 			_isComponent: false,
 			_key: null,
 			_isLoaded: false,
-		}, props);
+		}, {}, props);
 
 		this.subscription = NativeRNAudioEmitter.addListener(
 			'PlayerUpdate',
@@ -81,6 +81,10 @@ export default class RNAudio extends Gui {
 		this.state.src = string;
 		// this._prepare();
 	}
+	
+	// set cover ( string ) {
+	// 	this._metadata.cover = string;
+	// }
 	
 	set canplay ( callback ) {
 		this.state.canplay = callback;
@@ -138,9 +142,18 @@ export default class RNAudio extends Gui {
 
 		this.state._key = this._djb2Code( this.state.src );
 
+		// //Get options
+		var options  = Object.keys(this.state).reduce((previous, current) => {
+			if(['artist','title','album','cover'].indexOf(current) !== -1 && this.state[current]){
+				previous[current] = this.state[current];
+			}
+		    return previous;
+		}, {});
+
 		NativeRNAudio.prepare( 
 			this.state.src,
 			this.state._key,
+			options,
 			( data ) => {
 				this.state._duration = data._duration;
 			}
@@ -152,25 +165,13 @@ export default class RNAudio extends Gui {
 			this.play();	
 			this._setState({ _isPlaying: true})
 		} 
-
-		//Temporary
-		// setTimeout( () => {
-		// 	this.state.canplay && this.state.canplay();
-		// 	this.state.autoplay && this.play();
-		// 	setTimeout( () => {
-
-		// 		this.state.ended && this.state.	ended();
-		// 	}, 4000);
-		// }, 3000)
 	}	
-
-
 
 	_djb2Code(str) {
 	  var hash = 5381, i, char;
 	  for (i = 0; i < str.length; i++) {
 	      char = str.charCodeAt(i);
-	      hash = ((hash << 5) + hash) + char; /* hash * 33 + c */
+	      hash = ((hash << 5) + hash) + char;
 	  }
 	  return hash;
 	}

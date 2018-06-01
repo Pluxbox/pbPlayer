@@ -25,7 +25,6 @@ export default  class GUI extends Component {
 				disabled={!this.state.src}
 				onPress={() => {
 					this.play();
-					// this._setState( { _isPlaying:true }  );
 				}}
 			/>
 		)
@@ -36,7 +35,6 @@ export default  class GUI extends Component {
 				disabled={!this.state.src}
 				onPress={() => {
 					this.pause();
-					// this._setState( { _isPlaying:false } );
 			}}/>
 		)
 
@@ -78,9 +76,10 @@ export default  class GUI extends Component {
 				<ScrubBar
 					style={ styles.scrubBar }
 					disabled={this.state._duration > 0 ? false : true}
-					value={this.state._currentTime / this.state._duration}
+					maximumValue={this.state._duration}
+					value={this.state._currentTime}
 					onSliderChange={ ( position ) => {
-						this.currentTime = position * this.state._duration;
+						this.currentTime = position;
 					}}
 				 />
 				<Text style={styles.currentTime}>{Moment(this._calculateRemainingDuration()).format('mm:ss')}</Text>

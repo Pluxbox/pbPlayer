@@ -13,6 +13,7 @@ export default class ScrubBar extends Component {
 
 		this.state = {
 			value: props.value,
+			maximumValue: props.maximumValue,
 			isSeeking: false,
 			disabled: false,
 		}
@@ -21,6 +22,7 @@ export default class ScrubBar extends Component {
 	componentWillReceiveProps(nextProps) {
 		this.setState({
 			value: nextProps.value,
+			maximumValue: nextProps.maximumValue,
 			disabled: nextProps.disabled,
 		});		
 	}
@@ -35,6 +37,7 @@ export default class ScrubBar extends Component {
 				style={[ this.props.style ]}
 				value={ this.state.value }
 				disabled={this.state.disabled}
+				maximumValue={this.state.maximumValue}
 				onValueChange={( value ) => { 
 					this.props.onSliderChange( value ); 
 					this.setState( {

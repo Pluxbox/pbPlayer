@@ -106,18 +106,19 @@
 }
 
 - (void) setNowPlaying:(nonnull NSNumber*)key {
-  
   NSMutableDictionary* details = [self nowPlayingForKey:key];
   NSURL *imageURL = [NSURL URLWithString: [details objectForKey:@"cover"]];
   NSData *imageData = [NSData dataWithContentsOfURL:imageURL];
   UIImage *image = [UIImage imageWithData:imageData];
 
+  NSLog(@" test cover %@ \n",  [details objectForKey:@"cover"]);
+  
   MPMediaItemArtwork *artwork = [[MPMediaItemArtwork alloc] initWithImage: image];
   MPNowPlayingInfoCenter *center = [MPNowPlayingInfoCenter defaultCenter];
   MPRemoteCommandCenter *remoteCenter = [MPRemoteCommandCenter sharedCommandCenter];
   NSMutableDictionary *onAirInfo = [[NSMutableDictionary alloc] init];
   
-  AVPlayer* player = [self playerForKey:key];
+//  AVPlayer* player = [self playerForKey:key];
 
   //Set Elapse time
 //  [onAirInfo setValue:[NSNumber numberWithFloat:CMTimeGetSeconds(player.currentItem.currentTime)] forKey:MPNowPlayingInfoPropertyElapsedPlaybackTime];
@@ -127,6 +128,7 @@
       [onAirInfo setValue:[details objectForKey:key]  forKey:[ONAIR_DICT objectForKey:key]];
     }
   }
+
 
   [onAirInfo setValue:artwork  forKey:MPMediaItemPropertyArtwork];
 
@@ -144,7 +146,7 @@
 -(void)play {
   AVPlayer* player = [self playerForKey:self._key];
   [player play];
-  [self setNowPlaying: _key];
+//  [self setNowPlaying: _key];
   printf("[SPKRLOG] External Play \n");
 }
 
@@ -189,7 +191,7 @@ RCT_EXPORT_METHOD(pause:(nonnull NSNumber*)key ) {
 RCT_EXPORT_METHOD(seek:(nonnull NSNumber*)key withValue:(nonnull NSNumber*)value) {
   AVPlayer* player = [self playerForKey:key];
   [player.currentItem seekToTime:CMTimeMakeWithSeconds( [value floatValue], 1)];
-  NSDictionary *info = @{ @"elapsedTime": [NSNumber numberWithFloat:CMTimeGetSeconds(player.currentItem.currentTime)] };
+  NSDictionary *info = @{ @"elapsedTime": value };
   [self updateNowPlaying:info];
   printf("[SPKRLOG] Seek\n");
 }
@@ -206,16 +208,12 @@ RCT_EXPORT_METHOD(enableBackgroundMode) {
   [session setActive: YES error:nil];
 }
 
-
 RCT_EXPORT_METHOD(
     	prepare:(NSString*)fileName
     	withKey:(nonnull NSNumber*)key
+      withOptions:(NSDictionary*)options
       withCallback:(RCTResponseSenderBlock)callback
 	){
-  
-  //  NSURL *url = [NSURL URLWithString:@"https://icecast.omroep.nl/radio1-bb-aac"];
-  //   NSURL *url = [NSURL URLWithString:@"https://bitdash-a.akamaihd.net/content/sintel/hls/playlist.m3u8"];
-  // NSURL *url = [NSURL URLWithString:@"https://yourspeakr.com/audio/RadiopodcastDennisLaupman.mp3"];
 
   AVPlayer * player = [[AVPlayer alloc] initWithURL:[ NSURL URLWithString:fileName ] ];
   [player addObserver:self forKeyPath:@"status" options:0 context:nil];
@@ -230,16 +228,11 @@ RCT_EXPORT_METHOD(
     seconds = 0;
   }
 
-  NSDictionary *info = @{
-                           @"title": @"50 Essential Podcasts To Download Today",
-                           @"artist": @"Jennifer Clarkson",
-                           @"album": @"Playlist: Startups",
-                           @"duration": @(seconds),
-                           @"cover": @"https://yourspeakr.com/images/thumb1_sm.png"
-                         } ;
+  //Set duration
+  [options setValue:@(seconds) forKey:@"duration"];
   
   //Now On Air information
-  [[self nowPlayingPool] setObject:info forKey:key];
+  [[self nowPlayingPool] setObject:options forKey:key];
   
   printf("[SPKRLOG] Player prepared\n");
   
@@ -272,7 +265,7 @@ RCT_EXPORT_METHOD(
                             @"_currentTime": [NSNumber numberWithFloat:CMTimeGetSeconds(time)],
                             @"_key": key,
                             @"_isPlaying": @(player.rate != 0 && player.error == nil),
-                            @"_isEnded": @true
+//                            @"_isEnded": @true
                           };
 
     [self sendEventWithName:@"PlayerUpdate" body: data ];
@@ -287,7 +280,5 @@ RCT_EXPORT_METHOD(
 {
     return YES;
 }
-
-
 
 @end
