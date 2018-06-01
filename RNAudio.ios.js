@@ -42,6 +42,7 @@ export default class RNAudio extends Gui {
 			_duration: 0,
 			_loop: false,
 			_isMuted: false,
+			_isEnded: false,
 			_isComponent: false,
 			_key: null,
 			_isLoaded: false,
@@ -51,7 +52,9 @@ export default class RNAudio extends Gui {
 			'PlayerUpdate',
 			( data ) => {
 				if(this.state._key == data._key){
-					this._setState( { _currentTime: data._currentTime }  )
+					this._setState( { _currentTime: data._currentTime  }  )
+
+					console.log(data)
 				}
 			}
 		);

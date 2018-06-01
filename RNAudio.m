@@ -117,7 +117,8 @@
   //Bind external displays
   [self toggleHandler:remoteCenter.playCommand withSelector:@selector(play) enabled:YES];
   [self toggleHandler:remoteCenter.pauseCommand withSelector:@selector(pause) enabled:YES];
-  [self toggleHandler:remoteCenter.changePlaybackPositionCommand withSelector:@selector(changePlaybackPosition) enabled:YES];
+  [self toggleHandler:remoteCenter.changePlaybackPositionCommand withSelector:@selector(changePlaybackPosition:) enabled:YES];
+
   
   printf("[SPKRLOG] setNowPlaying\n");
 }
@@ -138,8 +139,13 @@
   printf("[SPKRLOG] External Pause \n");
 }
 
--(void)changePlaybackPosition {
-  printf("[SPKRLOG] External pp \n");
+-(void)changePlaybackPosition:(MPChangePlaybackPositionCommandEvent*)event {
+  AVPlayer* player = [self playerForKey:_key];
+  
+    float f = (float) event.positionTime;
+  
+  [player.currentItem seekToTime:CMTimeMakeWithSeconds( f, 1)];
+  printf("[SPKRLOG] External pp %f \n", f  );
 }
 
 -(void)itemDidFinishPlaying {
@@ -251,7 +257,8 @@ RCT_EXPORT_METHOD(
     
   NSDictionary * data = @{
                             @"_currentTime": [NSNumber numberWithFloat:CMTimeGetSeconds(time)],
-                            @"_key": key
+                            @"_key": key,
+                            @"_isEnded": @true
                           };
 
     [self sendEventWithName:@"PlayerUpdate" body: data ];
