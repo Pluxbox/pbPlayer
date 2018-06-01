@@ -189,11 +189,10 @@ RCT_EXPORT_METHOD(play:(nonnull NSNumber*)key ) {
   [player play];
   self._key = key;
   [self setNowPlaying: key];
-//  [self updateNowPlaying:@{
-//                           @"elapsedTime": [NSNumber numberWithFloat:CMTimeGetSeconds(player.currentItem.currentTime)],
-//                           @"speed": @1,
-//                           }];
-//
+  [self updateNowPlaying:@{
+                           @"elapsedTime": [NSNumber numberWithFloat:CMTimeGetSeconds(player.currentItem.currentTime)],
+                           @"speed": @1,
+                           }];
   printf("[SPKRLOG] Play\n");
 }
 
@@ -210,9 +209,6 @@ RCT_EXPORT_METHOD(pause:(nonnull NSNumber*)key ) {
 RCT_EXPORT_METHOD(seek:(nonnull NSNumber*)key withValue:(nonnull NSNumber*)value) {
   AVPlayer* player = [self playerForKey:key];
   [player.currentItem seekToTime:CMTimeMakeWithSeconds( [value floatValue], 1)];
-  //@"elapsedTime": [NSNumber numberWithFloat: event.positionTime],
-  
-  
   [self updateNowPlaying:@{
                            @"elapsedTime": [NSNumber numberWithFloat: [value floatValue]],
                            @"speed": @0,
@@ -240,7 +236,8 @@ RCT_EXPORT_METHOD(
 	){
 
   AVPlayer * player = [[AVPlayer alloc] initWithURL:[ NSURL URLWithString:fileName ] ];
-  [player addObserver:self forKeyPath:@"status" options:0 context:nil];
+
+  [player.currentItem addObserver:self forKeyPath:@"status" options:0 context:nil];
 
   [[self playerPool] setObject:player forKey:key];
   [self updateJSScope: key];
@@ -265,16 +262,27 @@ RCT_EXPORT_METHOD(
 }
 
 - (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object
-                        change:(NSDictionary *)change context:(void *)context {
-  
-//     if (object == player && [keyPath isEqualToString:@"status"]) {
-//         if (player.status == AVPlayerStatusReadyToPlay) {
-////             playButton.enabled = YES;
-//           printf("[SPKRLOG] AVPlayerStatusReadyToPlay\n");
-//         } else if (player.status == AVPlayerStatusFailed) {
-//             // something went wrong. player.error should contain some information
-//         }
-//     }
+                        change:(NSDictionary *)change context:(void *)context
+{
+  for (NSNumber *key in _playerPool) {
+    AVPlayer* player = [self playerForKey:key];
+    
+    if (object == player.currentItem && [keyPath isEqualToString:@"status"]) {
+         if (player.status == AVPlayerStatusReadyToPlay) {
+           
+           NSDictionary * data = @{
+                                   @"_key": key,
+                                   @"_isReadyToPlay": @YES
+                                   };
+           
+           [self sendEventWithName:@"PlayerUpdate" body: data ];
+           NSLog(@"[SPKRLOG] AVPlayerStatusReadyToPlay \n");
+           
+         } else if (player.status == AVPlayerStatusFailed) {
+             // something went wrong. player.error should contain some information
+         }
+     }
+  }
 }
 
 
@@ -284,12 +292,12 @@ RCT_EXPORT_METHOD(
   CMTime interval = CMTimeMakeWithSeconds(1, NSEC_PER_SEC); // 1 second
   
   playbackTimeObserver = [ player addPeriodicTimeObserverForInterval:interval queue:NULL usingBlock:^(CMTime time) {
-
+    
   NSDictionary * data = @{
                             @"_currentTime": [NSNumber numberWithFloat:CMTimeGetSeconds(time)],
                             @"_key": key,
                             @"_isPlaying": @(player.rate != 0 && player.error == nil),
-//                            @"_isEnded": @true
+//                            @"_isEnded": @true,
                           };
 
     [self sendEventWithName:@"PlayerUpdate" body: data ];
