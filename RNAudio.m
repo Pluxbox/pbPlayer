@@ -7,6 +7,7 @@
   NSMutableDictionary* _playerPool;
   NSMutableDictionary* _nowPlayingPool;
   AVPlayer * playbackTimeObserver;
+  BOOL isSeeking;
 }
 
 #define ONAIR_DICT @{\
@@ -165,7 +166,15 @@
 
 -(void)changePlaybackPosition:(MPChangePlaybackPositionCommandEvent*)event {
   AVPlayer* player = [self playerForKey:_key];
-  [player.currentItem seekToTime:CMTimeMakeWithSeconds( (float) event.positionTime, 1)];
+  [player.currentItem
+   seekToTime:CMTimeMakeWithSeconds( (float) event.positionTime, 1)
+   toleranceBefore:kCMTimeZero
+   toleranceAfter:kCMTimeZero
+   completionHandler:^(BOOL finished){
+     isSeeking = NO;
+   }
+  ];
+  
   [self updateNowPlaying:@{
                            @"elapsedTime": [NSNumber numberWithFloat: event.positionTime],
                            @"speed": @0,
@@ -208,7 +217,15 @@ RCT_EXPORT_METHOD(pause:(nonnull NSNumber*)key ) {
 
 RCT_EXPORT_METHOD(seek:(nonnull NSNumber*)key withValue:(nonnull NSNumber*)value) {
   AVPlayer* player = [self playerForKey:key];
-  [player.currentItem seekToTime:CMTimeMakeWithSeconds( [value floatValue], 1)];
+  isSeeking = YES;
+  [player.currentItem
+    seekToTime:CMTimeMakeWithSeconds( [value floatValue], 1)
+    toleranceBefore:kCMTimeZero
+    toleranceAfter:kCMTimeZero
+    completionHandler:^(BOOL finished){
+     isSeeking = NO;
+    }
+   ];
   [self updateNowPlaying:@{
                            @"elapsedTime": [NSNumber numberWithFloat: [value floatValue]],
                            @"speed": @0,
@@ -299,8 +316,10 @@ RCT_EXPORT_METHOD(
                             @"_isPlaying": @(player.rate != 0 && player.error == nil),
 //                            @"_isEnded": @true,
                           };
-
-    [self sendEventWithName:@"PlayerUpdate" body: data ];
+    if(!isSeeking) {
+      [self sendEventWithName:@"PlayerUpdate" body: data ];
+    }
+    
   }];
 }
 
@@ -314,3 +333,5 @@ RCT_EXPORT_METHOD(
 }
 
 @end
+
+

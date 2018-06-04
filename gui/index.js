@@ -7,16 +7,9 @@ import {
 } from "react-native";
 import ScrubBar from './scrubbar';
 
-import Moment from 'moment';
-
-
 export default  class GUI extends Component {
 
-	_calculateRemainingDuration() {
-		const duration = (this.state._duration-this.state._currentTime) * 1000
-		return duration < 0 ? 0 : duration;
-	}
-
+	
 	_togglePlayBtn() {
 
 		const play = (
@@ -72,7 +65,6 @@ export default  class GUI extends Component {
 		return (
 			<View style={styles.container}>
 				{this._togglePlayBtn()}
-				<Text style={styles.currentTime}>{Moment(this.state._currentTime*1000).format('mm:ss')}</Text>
 				<ScrubBar
 					style={ styles.scrubBar }
 					disabled={this.state._duration > 0 ? false : true}
@@ -82,7 +74,7 @@ export default  class GUI extends Component {
 						this.currentTime = position;
 					}}
 				 />
-				<Text style={styles.currentTime}>{Moment(this._calculateRemainingDuration()).format('mm:ss')}</Text>
+				
 				{this._toggleMuteBtn()}
 			</View> 
 		)
@@ -90,16 +82,12 @@ export default  class GUI extends Component {
 };
 
 const styles = StyleSheet.create({
-
 	container: {
 		backgroundColor: 'rgba(255,0,255,.5)',
 		flexDirection: 'row',
 		alignItems:'center',
 	},
-	currentTime: {
-		backgroundColor: '#ff4400',
-		flexBasis: 50,
-	},
+	
 	scrubBar: {
 		flex:1,
 	},

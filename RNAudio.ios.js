@@ -52,7 +52,8 @@ export default class RNAudio extends Gui {
 		this.subscription = NativeRNAudioEmitter.addListener(
 			'PlayerUpdate',
 			( data ) => {				
-				if(this.state._key == data._key){				
+				if(this.state._key == data._key){
+					
 					this._setState( { 
 						_currentTime: data._currentTime,
 						_isPlaying: data._isPlaying,
@@ -61,7 +62,7 @@ export default class RNAudio extends Gui {
 					if(data._isReadyToPlay && data._isReadyToPlay !== this._isReadyToPlay ) {
 						this.state.canplay && this.state.canplay();
 
-						console.log("adsadasdas");
+						// console.log("adsadasdas");
 						setTimeout(()=> {
 							this.state._isComponent && this.state.autoplay && this.play();
 							
