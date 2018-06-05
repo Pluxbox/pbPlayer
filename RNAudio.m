@@ -104,42 +104,47 @@
   printf("[SPKRLOG] Update Now Playing\n");
 }
 
+- (NSDictionary *) update:(NSMutableDictionary *) mediaDict with:(NSDictionary *) details andSetDefaults:(BOOL) setDefault {
+  
+  for (NSString *key in ONAIR_DICT) {
+    if ([details objectForKey:key] != nil) {
+      [mediaDict setValue:[details objectForKey:key] forKey:[ONAIR_DICT objectForKey:key]];
+    }
+    
+    // In iOS Simulator, always include the MPNowPlayingInfoPropertyPlaybackRate key in your nowPlayingInfo dictionary
+    // only if we are creating a new dictionary
+//    if ([key isEqualToString:MEDIA_SPEED] && [details objectForKey:key] == nil && setDefault) {
+//      [mediaDict setValue:[NSNumber numberWithDouble:1] forKey:[MEDIA_DICT objectForKey:key]];
+//    }
+  }
+  
+  return mediaDict;
+}
 
 
 - (void) setNowPlaying:(nonnull NSNumber*)key {
   
   AVPlayer* player = [self playerForKey:key];
-  
+//
   NSMutableDictionary* details = [self nowPlayingForKey:key];
-  NSURL *imageURL = [NSURL URLWithString: [details objectForKey:@"cover"]];
-  NSData *imageData = [NSData dataWithContentsOfURL:imageURL];
-  UIImage *image = [UIImage imageWithData:imageData];
+//  NSURL *imageURL = [NSURL URLWithString: [details objectForKey:@"cover"]];
+//  NSData *imageData = [NSData dataWithContentsOfURL:imageURL];
+//  UIImage *image = [UIImage imageWithData:imageData];
+//  MPMediaItemArtwork *artwork = [[MPMediaItemArtwork alloc] initWithImage: image];
 
-  NSLog(@" test cover %@ \n",  [details objectForKey:@"cover"]);
-  
-  MPMediaItemArtwork *artwork = [[MPMediaItemArtwork alloc] initWithImage: image];
   MPNowPlayingInfoCenter *center = [MPNowPlayingInfoCenter defaultCenter];
-  MPRemoteCommandCenter *remoteCenter = [MPRemoteCommandCenter sharedCommandCenter];
-  NSMutableDictionary *onAirInfo = [[NSMutableDictionary alloc] init];
-  
-  
-//  for (NSString *key in ONAIR_DICT) {
-//    if ([details objectForKey:key] != nil) {
-//      [onAirInfo setValue:[details objectForKey:key]  forKey:[ONAIR_DICT objectForKey:key]];
-//    }
-//  }
+  NSMutableDictionary *onAirInfo = [NSMutableDictionary dictionary];
 
-  //Set Elapse time
-  [onAirInfo setValue:@1  forKey:MPNowPlayingInfoPropertyPlaybackRate];
-  [onAirInfo setValue:[NSNumber numberWithFloat:CMTimeGetSeconds(player.currentItem.currentTime)] forKey:MPNowPlayingInfoPropertyElapsedPlaybackTime];
+//
+//  //Set Elapse time
+//  [onAirInfo setValue:@1  forKey:MPNowPlayingInfoPropertyPlaybackRate];
+
+//  [onAirInfo setValue:[NSNumber numberWithFloat:CMTimeGetSeconds(player.currentItem.currentTime)] forKey:MPNowPlayingInfoPropertyElapsedPlaybackTime];
 //  [onAirInfo setValue:artwork  forKey:MPMediaItemPropertyArtwork];
 
-  center.nowPlayingInfo = onAirInfo;
+   center.nowPlayingInfo = [self update:onAirInfo with:details andSetDefaults:true];
 
   //Bind external displays
-  [self toggleHandler:remoteCenter.playCommand withSelector:@selector(play) enabled:YES];
-  [self toggleHandler:remoteCenter.pauseCommand withSelector:@selector(pause) enabled:YES];
-  [self toggleHandler:remoteCenter.changePlaybackPositionCommand withSelector:@selector(changePlaybackPosition:) enabled:YES];
   printf("[SPKRLOG] Set Now Playing\n");
 }
 
@@ -202,11 +207,6 @@ RCT_EXPORT_METHOD(play:(nonnull NSNumber*)key ) {
   [player play];
   self._key = key;
   [self setNowPlaying: key];
-  [self updateNowPlaying:@{
-                           @"elapsedTime": [NSNumber numberWithFloat:CMTimeGetSeconds(player.currentItem.currentTime)],
-                           @"speed": @1,
-                           @"mediaType": @(MPNowPlayingInfoMediaTypeAudio),
-                           }];
   printf("[SPKRLOG] Play\n");
 }
 
@@ -274,6 +274,9 @@ RCT_EXPORT_METHOD(
   //Set duration
   [options setValue:@(seconds) forKey:@"duration"];
   
+  //Set Media Type
+  [options setValue:MPNowPlayingInfoPropertyMediaType forKey:@(MPNowPlayingInfoMediaTypeAudio)];
+  
   //Now On Air information
   [[self nowPlayingPool] setObject:options forKey:key];
   
@@ -281,6 +284,12 @@ RCT_EXPORT_METHOD(
   
   //callback
   callback( @[ @{ @"_duration": @(seconds) } ] );
+  
+  //Enable external controls
+  MPRemoteCommandCenter *remoteCenter = [MPRemoteCommandCenter sharedCommandCenter];
+  [self toggleHandler:remoteCenter.playCommand withSelector:@selector(play) enabled:YES];
+  [self toggleHandler:remoteCenter.pauseCommand withSelector:@selector(pause) enabled:YES];
+  [self toggleHandler:remoteCenter.changePlaybackPositionCommand withSelector:@selector(changePlaybackPosition:) enabled:YES];
 }
 
 - (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object
