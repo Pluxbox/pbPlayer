@@ -24,13 +24,15 @@ export default class ScrubBar extends Component {
 
 	componentWillReceiveProps(nextProps) {
 		this.setState({
-			value: !this.state.isSeeking ? nextProps.value : this.state.value,
+			value: nextProps.value || this.state.value,
 			maximumValue: nextProps.maximumValue,
 			disabled: nextProps.disabled,
 		});
 	}
 
-	
+	shouldComponentUpdate() {
+		return !this.state.isSeeking;
+	}
 
 	_calculateRemainingDuration() {
 		const duration = (this.state.maximumValue-this.state.value) * 1000

@@ -16,7 +16,8 @@
   @"album": MPMediaItemPropertyAlbumTitle, \
   @"duration": MPMediaItemPropertyPlaybackDuration, \
   @"elapsedTime": MPNowPlayingInfoPropertyElapsedPlaybackTime, \
-  @"speed": MPNowPlayingInfoPropertyPlaybackRate \
+  @"speed": MPNowPlayingInfoPropertyPlaybackRate, \
+  @"mediaType": MPNowPlayingInfoPropertyMediaType \
 }
 
 @synthesize _key = _key;
@@ -93,12 +94,12 @@
 - (void) updateNowPlaying:(NSDictionary *) originalDetails {
   MPNowPlayingInfoCenter *center = [MPNowPlayingInfoCenter defaultCenter];
   NSMutableDictionary *onAirInfo = [[NSMutableDictionary alloc] initWithDictionary: center.nowPlayingInfo];
-  NSMutableDictionary *details = [originalDetails mutableCopy];
-  for (NSString *key in ONAIR_DICT) {
-    if ([details objectForKey:key] != nil) {
-      [onAirInfo setValue:[details objectForKey:key]  forKey:[ONAIR_DICT objectForKey:key]];
-    }
-  }
+//  NSMutableDictionary *details = [originalDetails mutableCopy];
+//  for (NSString *key in ONAIR_DICT) {
+//    if ([details objectForKey:key] != nil) {
+//      [onAirInfo setValue:[details objectForKey:key]  forKey:[ONAIR_DICT objectForKey:key]];
+//    }
+//  }
   center.nowPlayingInfo = onAirInfo;
   printf("[SPKRLOG] Update Now Playing\n");
 }
@@ -122,16 +123,16 @@
   NSMutableDictionary *onAirInfo = [[NSMutableDictionary alloc] init];
   
   
-  for (NSString *key in ONAIR_DICT) {
-    if ([details objectForKey:key] != nil) {
-      [onAirInfo setValue:[details objectForKey:key]  forKey:[ONAIR_DICT objectForKey:key]];
-    }
-  }
+//  for (NSString *key in ONAIR_DICT) {
+//    if ([details objectForKey:key] != nil) {
+//      [onAirInfo setValue:[details objectForKey:key]  forKey:[ONAIR_DICT objectForKey:key]];
+//    }
+//  }
 
   //Set Elapse time
   [onAirInfo setValue:@1  forKey:MPNowPlayingInfoPropertyPlaybackRate];
   [onAirInfo setValue:[NSNumber numberWithFloat:CMTimeGetSeconds(player.currentItem.currentTime)] forKey:MPNowPlayingInfoPropertyElapsedPlaybackTime];
-  [onAirInfo setValue:artwork  forKey:MPMediaItemPropertyArtwork];
+//  [onAirInfo setValue:artwork  forKey:MPMediaItemPropertyArtwork];
 
   center.nowPlayingInfo = onAirInfo;
 
@@ -172,11 +173,14 @@
    toleranceAfter:kCMTimeZero
    completionHandler:^(BOOL finished){
      isSeeking = NO;
+     NSLog(finished ? @"Yes" : @"NO");
    }
+   
+   
   ];
   
   [self updateNowPlaying:@{
-                           @"elapsedTime": [NSNumber numberWithFloat: event.positionTime],
+                           @"elapsedTime": @600, // event.positionTime
                            @"speed": @0,
                            }];
   printf("[SPKRLOG] External scrubbar\n");
@@ -201,6 +205,7 @@ RCT_EXPORT_METHOD(play:(nonnull NSNumber*)key ) {
   [self updateNowPlaying:@{
                            @"elapsedTime": [NSNumber numberWithFloat:CMTimeGetSeconds(player.currentItem.currentTime)],
                            @"speed": @1,
+                           @"mediaType": @(MPNowPlayingInfoMediaTypeAudio),
                            }];
   printf("[SPKRLOG] Play\n");
 }
@@ -212,7 +217,7 @@ RCT_EXPORT_METHOD(pause:(nonnull NSNumber*)key ) {
                            @"elapsedTime": [NSNumber numberWithFloat:CMTimeGetSeconds(player.currentItem.currentTime)],
                            @"speed": @0,
                            }];
-	printf("[SPKRLOG] Pausxde\n");
+	printf("[SPKRLOG] Pause\n");
 }
 
 RCT_EXPORT_METHOD(seek:(nonnull NSNumber*)key withValue:(nonnull NSNumber*)value) {
