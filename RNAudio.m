@@ -97,19 +97,6 @@
   command.enabled = enabled;
 }
 
-- (void) updateNowPlaying:(NSDictionary *) originalDetails {
-  MPNowPlayingInfoCenter *center = [MPNowPlayingInfoCenter defaultCenter];
-  NSMutableDictionary *onAirInfo = [[NSMutableDictionary alloc] initWithDictionary: center.nowPlayingInfo];
-//  NSMutableDictionary *details = [originalDetails mutableCopy];
-//  for (NSString *key in ONAIR_DICT) {
-//    if ([details objectForKey:key] != nil) {
-//      [onAirInfo setValue:[details objectForKey:key]  forKey:[ONAIR_DICT objectForKey:key]];
-//    }
-//  }
-  center.nowPlayingInfo = onAirInfo;
-  printf("[SPKRLOG] Update Now Playing\n");
-}
-
 - (NSDictionary *) update:(NSMutableDictionary *) mediaDict with:(NSDictionary *) details andSetDefaults:(BOOL) setDefault {
   
   for (NSString *key in ONAIR_DICT) {
@@ -193,13 +180,15 @@
   }
 }
 
+
 - (void) setNowPlaying:(nonnull NSNumber*)key {
   
   AVPlayer* player = [self playerForKey:key];
 
   NSMutableDictionary* details = [self nowPlayingForKey:key];
+
   MPNowPlayingInfoCenter *center = [MPNowPlayingInfoCenter defaultCenter];
-  NSMutableDictionary *onAirInfo = [NSMutableDictionary dictionary];
+  NSMutableDictionary *onAirInfo =  [NSMutableDictionary dictionary];
 
   center.nowPlayingInfo = [self update:onAirInfo with:details andSetDefaults:true];
 
@@ -211,8 +200,26 @@
 }
 
 
-
-
+- (void) updateNowPlaying:(NSDictionary *) originalDetails {
+  
+  MPNowPlayingInfoCenter *center = [MPNowPlayingInfoCenter defaultCenter];
+  NSMutableDictionary *onAirInfo = [[NSMutableDictionary alloc] initWithDictionary: center.nowPlayingInfo];
+//
+  NSMutableDictionary *details = [originalDetails mutableCopy];
+//  for (NSString *key in ONAIR_DICT) {
+////    if ([details objectForKey:key] != nil) {
+////      [onAirInfo setValue:[details objectForKey:key]  forKey:[ONAIR_DICT objectForKey:key]];
+////    }
+//  }
+  
+  [onAirInfo setValue:[details objectForKey:@"speed"]   forKey:MPNowPlayingInfoPropertyPlaybackRate];
+  [onAirInfo setValue:[details objectForKey:@"elapsedTime"]   forKey:MPNowPlayingInfoPropertyElapsedPlaybackTime];
+  
+  
+  center.nowPlayingInfo = onAirInfo;
+  
+ 
+}
 
 
 //External display functions
@@ -247,13 +254,10 @@
      NSLog(finished ? @"Yes" : @"NO");
    }
    
-   
+
   ];
   
-  [self updateNowPlaying:@{
-                           @"elapsedTime": @600, // event.positionTime
-                           @"speed": @0,
-                           }];
+
   printf("[SPKRLOG] External scrubbar\n");
 }
 
@@ -267,7 +271,6 @@ RCT_EXPORT_MODULE()
 //JS functions
 RCT_EXPORT_METHOD(play:(nonnull NSNumber*)key ) {
   AVPlayer* player = [self playerForKey:key];
-  [[AVAudioSession sharedInstance] setActive:YES error:nil];
   [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(audioSessionChangeObserver:) name:AVAudioSessionRouteChangeNotification object:nil];
   [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(itemDidFinishPlaying) name:AVPlayerItemDidPlayToEndTimeNotification object:player.currentItem];
   [player play];
@@ -295,12 +298,17 @@ RCT_EXPORT_METHOD(seek:(nonnull NSNumber*)key withValue:(nonnull NSNumber*)value
     toleranceAfter:kCMTimeZero
     completionHandler:^(BOOL finished){
      isSeeking = NO;
+      
+      [self updateNowPlaying:@{
+                               @"elapsedTime": [NSNumber numberWithFloat: [value floatValue]],
+                               @"speed":  @(player.rate != 0 && player.error == nil) ? @1 : @0
+                               }];
+      
+      printf("[SPKRLOG] RTEADDDD\n");
+      
     }
    ];
-  [self updateNowPlaying:@{
-                           @"elapsedTime": [NSNumber numberWithFloat: [value floatValue]],
-                           @"speed": @0,
-                           }];
+  
   printf("[SPKRLOG] Seek\n");
 }
 

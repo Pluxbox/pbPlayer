@@ -24,15 +24,16 @@ export default class ScrubBar extends Component {
 
 	componentWillReceiveProps(nextProps) {
 		this.setState({
-			value: nextProps.value || this.state.value,
+			// value: this.state.isSeeking ? this.state.value ? nextProps.value ,
+			value: this.state.isSeeking ? this.state.value : nextProps.value ,
 			maximumValue: nextProps.maximumValue,
 			disabled: nextProps.disabled,
 		});
 	}
 
-	shouldComponentUpdate() {
-		return !this.state.isSeeking;
-	}
+	// shouldComponentUpdate() {
+	// 	return !this.state.isSeeking;
+	// }
 
 	_calculateRemainingDuration() {
 		const duration = (this.state.maximumValue-this.state.value) * 1000
@@ -41,7 +42,9 @@ export default class ScrubBar extends Component {
 
 	render() {
 
-		console.log(this.props.isBuffering, this.state.value)
+
+
+		// console.log(this.props.isBuffering, this.state.value)
 
 		return (
 			<View style={[ this.props.style, styles.container ]}>
