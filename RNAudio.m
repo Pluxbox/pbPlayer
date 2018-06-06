@@ -3,6 +3,12 @@
 @import MediaPlayer;
 
 
+@interface NativeRNAudio ()
+  @property (nonatomic, copy) NSString *artworkUrl;
+//  @property (nonatomic, assign) BOOL audioInterruptionsObserved;
+@end
+
+
 @implementation NativeRNAudio {
   NSMutableDictionary* _playerPool;
   NSMutableDictionary* _nowPlayingPool;
@@ -119,40 +125,94 @@
   return mediaDict;
 }
 
+- (NSString*)getArtworkUrl:(NSString*)artwork {
+  NSString *artworkUrl = nil;
+  
+  if (artwork) {
+    if ([artwork isKindOfClass:[NSString class]]) {
+      artworkUrl = artwork;
+    } else if ([[artwork valueForKey: @"uri"] isKindOfClass:[NSString class]]) {
+      artworkUrl = [artwork valueForKey: @"uri"];
+    }
+  }
+  
+  return artworkUrl;
+}
+
+- (void)updateArtworkIfNeeded:(id)artworkUrl
+{
+  NSLog(@"Artwork URL %@", artworkUrl);
+  
+  if (artworkUrl != nil) {
+    self.artworkUrl = artworkUrl;
+    
+    // Custom handling of artwork in another thread, will be loaded async
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_BACKGROUND, 0), ^{
+      UIImage *image = nil;
+      
+      // check whether artwork path is present
+      if (![artworkUrl isEqual: @""]) {
+        // artwork is url download from the interwebs
+        if ([artworkUrl hasPrefix: @"http://"] || [artworkUrl hasPrefix: @"https://"]) {
+          NSURL *imageURL = [NSURL URLWithString:artworkUrl];
+          NSData *imageData = [NSData dataWithContentsOfURL:imageURL];
+          image = [UIImage imageWithData:imageData];
+        } else {
+          NSString *localArtworkUrl = [artworkUrl stringByReplacingOccurrencesOfString:@"file://" withString:@""];
+          BOOL fileExists = [[NSFileManager defaultManager] fileExistsAtPath:localArtworkUrl];
+          if (fileExists) {
+            image = [UIImage imageNamed:localArtworkUrl];
+          }
+        }
+      }
+      
+      // Check if image was available otherwise don't do anything
+      if (image == nil) {
+        return;
+      }
+      
+      // check whether image is loaded
+      CGImageRef cgref = [image CGImage];
+      CIImage *cim = [image CIImage];
+      
+      if (cim != nil || cgref != NULL) {
+        
+        dispatch_async(dispatch_get_main_queue(), ^{
+          
+          // Check if URL wasn't changed in the meantime
+          if ([artworkUrl isEqual:self.artworkUrl]) {
+            MPNowPlayingInfoCenter *center = [MPNowPlayingInfoCenter defaultCenter];
+            MPMediaItemArtwork *artwork = [[MPMediaItemArtwork alloc] initWithImage: image];
+            NSMutableDictionary *mediaDict = (center.nowPlayingInfo != nil) ? [[NSMutableDictionary alloc] initWithDictionary: center.nowPlayingInfo] : [NSMutableDictionary dictionary];
+            [mediaDict setValue:artwork forKey:MPMediaItemPropertyArtwork];
+            center.nowPlayingInfo = mediaDict;
+          }
+        });
+      }
+    });
+  }
+}
 
 - (void) setNowPlaying:(nonnull NSNumber*)key {
   
   AVPlayer* player = [self playerForKey:key];
-//
-  NSMutableDictionary* details = [self nowPlayingForKey:key];
-  
-  
-  NSURL *imageURL = [NSURL URLWithString: [details objectForKey:@"cover"]];
-  NSData *imageData = [NSData dataWithContentsOfURL:imageURL];
-  UIImage *image = [UIImage imageWithData:imageData];
-  MPMediaItemArtwork *artwork = [[MPMediaItemArtwork alloc] initWithImage: image];
 
+  NSMutableDictionary* details = [self nowPlayingForKey:key];
   MPNowPlayingInfoCenter *center = [MPNowPlayingInfoCenter defaultCenter];
   NSMutableDictionary *onAirInfo = [NSMutableDictionary dictionary];
+
+  center.nowPlayingInfo = [self update:onAirInfo with:details andSetDefaults:true];
+
+  NSString *artworkUrl = [self getArtworkUrl:[details objectForKey:@"cover"]];
+  [self updateArtworkIfNeeded:artworkUrl];
   
-   player.allowsAirPlayVideo = NO;
-
-//b
-//  //Set Elapse time
-//  [onAirInfo setValue:@1  forKey:MPNowPlayingInfoPropertyPlaybackRate];
-
-//  [onAirInfo setValue:[NSNumber numberWithFloat:CMTimeGetSeconds(player.currentItem.currentTime)] forKey:MPNowPlayingInfoPropertyElapsedPlaybackTime];
-  [onAirInfo setValue:artwork  forKey:MPMediaItemPropertyArtwork];
-  
-  
-    [onAirInfo setValue:@(MPNowPlayingInfoMediaTypeAudio)  forKey:MPNowPlayingInfoPropertyMediaType];
-    [onAirInfo setValue:@(MPMediaTypeMusic)  forKey:MPMediaItemPropertyMediaType];
-
-   center.nowPlayingInfo = [self update:onAirInfo with:details andSetDefaults:true];
-
   //Bind external displays
   printf("[SPKRLOG] Set Now Playing\n");
 }
+
+
+
+
 
 
 //External display functions
@@ -280,11 +340,6 @@ RCT_EXPORT_METHOD(
 
   //Set duration
   [options setValue:@(seconds) forKey:@"duration"];
-  
-  //Set Media Type
-//  [options setValue:MPNowPlayingInfoPropertyMediaType forKey:@(MPNowPlayingInfoMediaTypeAudio)];
-//  [options setValue:@(MPNowPlayingInfoMediaTypeAudio) forKey:@"mediaType"];
-  
   
   //Now On Air information
   [[self nowPlayingPool] setObject:options forKey:key];
