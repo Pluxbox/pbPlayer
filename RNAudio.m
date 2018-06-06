@@ -111,11 +111,9 @@
       [mediaDict setValue:[details objectForKey:key] forKey:[ONAIR_DICT objectForKey:key]];
     }
     
-    // In iOS Simulator, always include the MPNowPlayingInfoPropertyPlaybackRate key in your nowPlayingInfo dictionary
-    // only if we are creating a new dictionary
-//    if ([key isEqualToString:MEDIA_SPEED] && [details objectForKey:key] == nil && setDefault) {
-//      [mediaDict setValue:[NSNumber numberWithDouble:1] forKey:[MEDIA_DICT objectForKey:key]];
-//    }
+    if ([key isEqualToString:@"speed"] && [details objectForKey:key] == nil && setDefault) {
+      [mediaDict setValue:[NSNumber numberWithDouble:1] forKey:[ONAIR_DICT objectForKey:key]];
+    }
   }
   
   return mediaDict;
@@ -127,20 +125,28 @@
   AVPlayer* player = [self playerForKey:key];
 //
   NSMutableDictionary* details = [self nowPlayingForKey:key];
-//  NSURL *imageURL = [NSURL URLWithString: [details objectForKey:@"cover"]];
-//  NSData *imageData = [NSData dataWithContentsOfURL:imageURL];
-//  UIImage *image = [UIImage imageWithData:imageData];
-//  MPMediaItemArtwork *artwork = [[MPMediaItemArtwork alloc] initWithImage: image];
+  
+  
+  NSURL *imageURL = [NSURL URLWithString: [details objectForKey:@"cover"]];
+  NSData *imageData = [NSData dataWithContentsOfURL:imageURL];
+  UIImage *image = [UIImage imageWithData:imageData];
+  MPMediaItemArtwork *artwork = [[MPMediaItemArtwork alloc] initWithImage: image];
 
   MPNowPlayingInfoCenter *center = [MPNowPlayingInfoCenter defaultCenter];
   NSMutableDictionary *onAirInfo = [NSMutableDictionary dictionary];
+  
+   player.allowsAirPlayVideo = NO;
 
-//
+//b
 //  //Set Elapse time
 //  [onAirInfo setValue:@1  forKey:MPNowPlayingInfoPropertyPlaybackRate];
 
 //  [onAirInfo setValue:[NSNumber numberWithFloat:CMTimeGetSeconds(player.currentItem.currentTime)] forKey:MPNowPlayingInfoPropertyElapsedPlaybackTime];
-//  [onAirInfo setValue:artwork  forKey:MPMediaItemPropertyArtwork];
+  [onAirInfo setValue:artwork  forKey:MPMediaItemPropertyArtwork];
+  
+  
+    [onAirInfo setValue:@(MPNowPlayingInfoMediaTypeAudio)  forKey:MPNowPlayingInfoPropertyMediaType];
+    [onAirInfo setValue:@(MPMediaTypeMusic)  forKey:MPMediaItemPropertyMediaType];
 
    center.nowPlayingInfo = [self update:onAirInfo with:details andSetDefaults:true];
 
@@ -260,6 +266,7 @@ RCT_EXPORT_METHOD(
   AVPlayer * player = [[AVPlayer alloc] initWithURL:[ NSURL URLWithString:fileName ] ];
 
   [player.currentItem addObserver:self forKeyPath:@"status" options:0 context:nil];
+  player.allowsExternalPlayback = NO;
 
   [[self playerPool] setObject:player forKey:key];
   [self updateJSScope: key];
@@ -275,7 +282,9 @@ RCT_EXPORT_METHOD(
   [options setValue:@(seconds) forKey:@"duration"];
   
   //Set Media Type
-  [options setValue:MPNowPlayingInfoPropertyMediaType forKey:@(MPNowPlayingInfoMediaTypeAudio)];
+//  [options setValue:MPNowPlayingInfoPropertyMediaType forKey:@(MPNowPlayingInfoMediaTypeAudio)];
+//  [options setValue:@(MPNowPlayingInfoMediaTypeAudio) forKey:@"mediaType"];
+  
   
   //Now On Air information
   [[self nowPlayingPool] setObject:options forKey:key];
