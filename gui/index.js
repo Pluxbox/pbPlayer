@@ -56,14 +56,15 @@ export default  class GUI extends Component {
 		)
 	
 		const off = (
-			<Button 
-				title="ON" 
+			<TouchableOpacity 
 				style={ styles.volume }
 				disabled={!this.state.src}
 				onPress={() => {
 					this.muted = false;
 					this._setState( { _isMuted:false }  );
-			}}/>
+			}}>
+				<Image source={ require('../assets/volume-muted.png') }  />
+			</TouchableOpacity>
 		)
 
 		return this.state._isMuted ? off : on;
@@ -107,5 +108,6 @@ const styles = StyleSheet.create({
 	},
 	volume: {
 		marginLeft: 5,
+		flexBasis: 25,
 	},
 });

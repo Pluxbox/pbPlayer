@@ -56,6 +56,8 @@ export default class ScrubBar extends Component {
 					value={ this.state.value }
 					disabled={this.state.disabled}
 					maximumValue={this.state.maximumValue}
+					minimumTrackTintColor="#9C9C9C"
+					maximumTrackTintColor="#575757"
 					onValueChange={( value ) => { 
 						this.setState( {
 							isSeeking: true,
