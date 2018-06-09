@@ -70,7 +70,7 @@ export default class ScrubBar extends Component {
 						this.props.onSliderChange( value ); 
 					}}
 				/>
-				<Text style={styles.time}>-{Moment(this._calculateRemainingDuration()).format('mm:ss')}</Text>
+				<Text style={ styles.time }>-{Moment(this._calculateRemainingDuration()).format('mm:ss')}</Text>
 			</View>
 		);
 	}
@@ -90,12 +90,8 @@ const styles = StyleSheet.create({
 		textAlign:'center',
 		
 	},
-	elapse: {},
 	slider: {
 		flex: 1,
 		height: 30,
-	},
-	remaining: {
-		
 	}
 });

@@ -43,19 +43,22 @@ export default  class GUI extends Component {
 	_toggleMuteBtn() {
 
 		const on = (
-			<Button 
-				title="OFF" 
+			<TouchableOpacity 
+				style={ styles.volume }
 				disabled={!this.state.src}
 				onPress={() => {
 					this.muted = true;
 					this._setState( { _isMuted:true }  );
 				}}
-			/>
+			>
+				<Image source={ require('../assets/volume.png') }  />
+			</TouchableOpacity>
 		)
 	
 		const off = (
 			<Button 
 				title="ON" 
+				style={ styles.volume }
 				disabled={!this.state.src}
 				onPress={() => {
 					this.muted = false;
@@ -79,8 +82,7 @@ export default  class GUI extends Component {
 					onSliderChange={ ( position ) => {
 						this.currentTime = position;
 					}}
-				 />
-				
+				 />	
 				{this._toggleMuteBtn()}
 			</View> 
 		)
@@ -90,19 +92,20 @@ export default  class GUI extends Component {
 
 const styles = StyleSheet.create({
 	container: {
-		backgroundColor: 'rgba(42,42,42,1)',
+		backgroundColor: 'rgb(42,42,42)',
 		flexDirection: 'row',
 		alignItems:'center',
 		height:30,
-		paddingHorizontal: 5,
+		paddingHorizontal: 15,
 	},
 	playToggleBtn: {
-		flexBasis: 25,
+		flexBasis: 15,
 		flexDirection: 'row',
-		justifyContent: 'center',
-		alignItems: 'center',
 	},	
 	scrubBar: {
 		flex:1,
+	},
+	volume: {
+		marginLeft: 5,
 	},
 });
