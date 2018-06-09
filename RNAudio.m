@@ -183,7 +183,7 @@
 
 - (void) setNowPlaying:(nonnull NSNumber*)key {
   
-  AVPlayer* player = [self playerForKey:key];
+//  AVPlayer* player = [self playerForKey:key];
 
   NSMutableDictionary* details = [self nowPlayingForKey:key];
 
@@ -206,19 +206,18 @@
   NSMutableDictionary *onAirInfo = [[NSMutableDictionary alloc] initWithDictionary: center.nowPlayingInfo];
 //
   NSMutableDictionary *details = [originalDetails mutableCopy];
-//  for (NSString *key in ONAIR_DICT) {
-////    if ([details objectForKey:key] != nil) {
-////      [onAirInfo setValue:[details objectForKey:key]  forKey:[ONAIR_DICT objectForKey:key]];
-////    }
-//  }
-  
+
   [onAirInfo setValue:[details objectForKey:@"speed"]   forKey:MPNowPlayingInfoPropertyPlaybackRate];
   [onAirInfo setValue:[details objectForKey:@"elapsedTime"]   forKey:MPNowPlayingInfoPropertyElapsedPlaybackTime];
   
-  
-  center.nowPlayingInfo = onAirInfo;
-  
- 
+  center.nowPlayingInfo = [self update:onAirInfo with:details andSetDefaults:false];
+
+  NSString *artworkUrl = [self getArtworkUrl:[originalDetails objectForKey:@"cover"]];
+  if (artworkUrl != self.artworkUrl && artworkUrl != nil) {
+    NSLog(@"Update Image");
+    self.artworkUrl = artworkUrl;
+    [self updateArtworkIfNeeded:artworkUrl];
+  }
 }
 
 
@@ -241,6 +240,10 @@
                            @"speed": @0,
                            }];
   printf("[SPKRLOG] External Pause \n");
+}
+
+- (void) LikeItem {
+  
 }
 
 -(void)changePlaybackPosition:(MPChangePlaybackPositionCommandEvent*)event {
@@ -271,11 +274,19 @@ RCT_EXPORT_MODULE()
 //JS functions
 RCT_EXPORT_METHOD(play:(nonnull NSNumber*)key ) {
   AVPlayer* player = [self playerForKey:key];
-  [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(audioSessionChangeObserver:) name:AVAudioSessionRouteChangeNotification object:nil];
-  [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(itemDidFinishPlaying) name:AVPlayerItemDidPlayToEndTimeNotification object:player.currentItem];
   [player play];
-  self._key = key;
-  [self setNowPlaying: key];
+  if(self._key == key) {
+    [self updateNowPlaying:@{
+                             @"elapsedTime": [NSNumber numberWithFloat:CMTimeGetSeconds(player.currentItem.currentTime)],
+                             @"speed": @1,
+                             }];
+  } else {
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(audioSessionChangeObserver:) name:AVAudioSessionRouteChangeNotification object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(itemDidFinishPlaying) name:AVPlayerItemDidPlayToEndTimeNotification object:player.currentItem];
+    
+    self._key = key;
+    [self setNowPlaying: key];
+  }
   printf("[SPKRLOG] Play\n");
 }
 
@@ -361,7 +372,10 @@ RCT_EXPORT_METHOD(
   MPRemoteCommandCenter *remoteCenter = [MPRemoteCommandCenter sharedCommandCenter];
   [self toggleHandler:remoteCenter.playCommand withSelector:@selector(play) enabled:YES];
   [self toggleHandler:remoteCenter.pauseCommand withSelector:@selector(pause) enabled:YES];
+  [self toggleHandler:remoteCenter.bookmarkCommand withSelector:@selector(LikeItem) enabled:YES];
   [self toggleHandler:remoteCenter.changePlaybackPositionCommand withSelector:@selector(changePlaybackPosition:) enabled:YES];
+  
+  remoteCenter.bookmarkCommand.localizedTitle = @"Mark position";
 }
 
 - (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object

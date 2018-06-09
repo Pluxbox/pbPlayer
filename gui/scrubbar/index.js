@@ -25,7 +25,7 @@ export default class ScrubBar extends Component {
 	componentWillReceiveProps(nextProps) {
 		this.setState({
 			// value: this.state.isSeeking ? this.state.value ? nextProps.value ,
-			value: this.state.isSeeking ? this.state.value : nextProps.value ,
+			value: this.state.isSeeking ? this.state.value : (nextProps.value || 0),
 			maximumValue: nextProps.maximumValue,
 			disabled: nextProps.disabled,
 		});
