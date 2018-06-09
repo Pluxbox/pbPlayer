@@ -48,14 +48,15 @@ export default class ScrubBar extends Component {
 
 		return (
 			<View style={[ this.props.style, styles.container ]}>
-				<Text style={styles.currentTime}>{Moment(this.state.value*1000).format('mm:ss')}</Text>
+				<Text style={styles.time}>{Moment(this.state.value*1000).format('mm:ss')}</Text>
 				<Slider 
 					style={[ styles.slider ]}
+					thumbImage={require('../../assets/thumb.png')}
+					thumbTintColor='#0c6692'
 					value={ this.state.value }
 					disabled={this.state.disabled}
 					maximumValue={this.state.maximumValue}
 					onValueChange={( value ) => { 
-
 						this.setState( {
 							isSeeking: true,
 							value: value,
@@ -69,7 +70,7 @@ export default class ScrubBar extends Component {
 						this.props.onSliderChange( value ); 
 					}}
 				/>
-				<Text style={styles.currentTime}>{Moment(this._calculateRemainingDuration()).format('mm:ss')}</Text>
+				<Text style={styles.time}>-{Moment(this._calculateRemainingDuration()).format('mm:ss')}</Text>
 			</View>
 		);
 	}
@@ -78,14 +79,23 @@ export default class ScrubBar extends Component {
 
 const styles = StyleSheet.create({
 	container: {
-		flexDirection: 'row'
+		flexDirection: 'row',
+		height:30,
 	},
-	currentTime: {
-		backgroundColor: '#ff4400',
+	time: {
 		flexBasis: 50,
+		color: "rgb(202,202,202)",
+		fontSize:12,
+		lineHeight:30,
+		textAlign:'center',
+		
 	},
+	elapse: {},
 	slider: {
 		flex: 1,
-		backgroundColor: '#fff000',
+		height: 30,
+	},
+	remaining: {
+		
 	}
 });

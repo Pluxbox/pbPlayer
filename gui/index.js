@@ -3,6 +3,8 @@ import {
   View, 
   Text,
   Button,
+  TouchableOpacity,
+  Image,
   StyleSheet 
 } from "react-native";
 import ScrubBar from './scrubbar';
@@ -13,22 +15,26 @@ export default  class GUI extends Component {
 	_togglePlayBtn() {
 
 		const play = (
-			<Button 
-				title="Play" 
+			<TouchableOpacity
 				disabled={!this.state.src}
+				style={ styles.playToggleBtn }
 				onPress={() => {
 					this.play();
 				}}
-			/>
+			>
+				<Image source={ require('../assets/play.png') }  />
+			</TouchableOpacity>
 		)
 	
 		const pause = (
-			<Button 
-				title="Pause" 
+			<TouchableOpacity
 				disabled={!this.state.src}
+				style={ styles.playToggleBtn }
 				onPress={() => {
 					this.pause();
-			}}/>
+			}}>	
+				<Image source={ require('../assets/pause.png') }  />
+			</TouchableOpacity>
 		)
 
 		return this.state._isPlaying ? pause : play;
@@ -81,13 +87,21 @@ export default  class GUI extends Component {
 	}
 };
 
+
 const styles = StyleSheet.create({
 	container: {
-		backgroundColor: 'rgba(255,0,255,.5)',
+		backgroundColor: 'rgba(42,42,42,1)',
 		flexDirection: 'row',
 		alignItems:'center',
+		height:30,
+		paddingHorizontal: 5,
 	},
-	
+	playToggleBtn: {
+		flexBasis: 25,
+		flexDirection: 'row',
+		justifyContent: 'center',
+		alignItems: 'center',
+	},	
 	scrubBar: {
 		flex:1,
 	},
