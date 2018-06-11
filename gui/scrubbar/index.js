@@ -65,7 +65,6 @@ export default class ScrubBar extends Component {
 						});
 					}}
 					onSlidingComplete = { ( value ) => {
-						
 						this.setState( {
 							isSeeking: false,
 						});
@@ -90,7 +89,6 @@ const styles = StyleSheet.create({
 		fontSize:12,
 		lineHeight:30,
 		textAlign:'center',
-		
 	},
 	slider: {
 		flex: 1,
