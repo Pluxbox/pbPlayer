@@ -97,15 +97,14 @@ const styles = StyleSheet.create({
 		flexDirection: 'row',
 		alignItems:'center',
 		height:30,
-		paddingRight: 15,
+		paddingRight: 5,
 	},
 	playToggleBtn: {
-		flexBasis: 40,
+		flexBasis: 30,
 		flexDirection: 'row',
 		height: 30,
-		paddingLeft: 25,
+		paddingLeft: 15,
 		alignItems: 'center',
-		// backgroundColor: '#ff00ff',
 	},	
 	scrubBar: {
 		flex:1,

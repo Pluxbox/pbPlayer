@@ -1,13 +1,5 @@
 #import "RNAudio.h"
-//@import AVFoundation;
 @import MediaPlayer;
-
-
-@interface NativeRNAudio ()
-  @property (nonatomic, copy) NSString *artworkUrl;
-//  @property (nonatomic, assign) BOOL audioInterruptionsObserved;
-@end
-
 
 @implementation NativeRNAudio {
   NSMutableDictionary* _playerPool;
@@ -101,6 +93,7 @@
   
   for (NSString *key in ONAIR_DICT) {
     if ([details objectForKey:key] != nil) {
+//        NSLog(@" %@: %@", [ONAIR_DICT objectForKey:key], [details objectForKey:key]);
       [mediaDict setValue:[details objectForKey:key] forKey:[ONAIR_DICT objectForKey:key]];
     }
     
@@ -128,8 +121,6 @@
 
 - (void)updateArtworkIfNeeded:(id)artworkUrl
 {
-  NSLog(@"Artwork URL %@", artworkUrl);
-  
   if (artworkUrl != nil) {
     self.artworkUrl = artworkUrl;
     
@@ -204,7 +195,7 @@
   
   MPNowPlayingInfoCenter *center = [MPNowPlayingInfoCenter defaultCenter];
   NSMutableDictionary *onAirInfo = [[NSMutableDictionary alloc] initWithDictionary: center.nowPlayingInfo];
-//
+
   NSMutableDictionary *details = [originalDetails mutableCopy];
 
   [onAirInfo setValue:[details objectForKey:@"speed"]   forKey:MPNowPlayingInfoPropertyPlaybackRate];
@@ -242,10 +233,6 @@
   printf("[SPKRLOG] External Pause \n");
 }
 
-- (void) LikeItem {
-  
-}
-
 -(void)changePlaybackPosition:(MPChangePlaybackPositionCommandEvent*)event {
   AVPlayer* player = [self playerForKey:_key];
   [player.currentItem
@@ -254,19 +241,24 @@
    toleranceAfter:kCMTimeZero
    completionHandler:^(BOOL finished){
      isSeeking = NO;
+     [self updateNowPlaying:@{
+                              @"elapsedTime": [NSNumber numberWithFloat: event.positionTime],
+                              @"speed":  @(player.rate != 0 && player.error == nil) ? @1 : @0
+                              }];
      NSLog(finished ? @"Yes" : @"NO");
    }
-   
-
   ];
-  
-
   printf("[SPKRLOG] External scrubbar\n");
 }
 
 -(void)itemDidFinishPlaying {
   printf("[SPKRLOG] Track Finished \n");
   [[NSNotificationCenter defaultCenter] removeObserver:self];
+}
+
+-(void) LikeItem {
+  NSLog(@
+        "Test Like Item");
 }
 
 RCT_EXPORT_MODULE()
@@ -308,18 +300,15 @@ RCT_EXPORT_METHOD(seek:(nonnull NSNumber*)key withValue:(nonnull NSNumber*)value
     toleranceBefore:kCMTimeZero
     toleranceAfter:kCMTimeZero
     completionHandler:^(BOOL finished){
-     isSeeking = NO;
-      
+      isSeeking = NO;
       [self updateNowPlaying:@{
                                @"elapsedTime": [NSNumber numberWithFloat: [value floatValue]],
                                @"speed":  @(player.rate != 0 && player.error == nil) ? @1 : @0
                                }];
       
-      printf("[SPKRLOG] RTEADDDD\n");
-      
+//      printf("[SPKRLOG] Seek aaa %@\n",  value );
     }
    ];
-  
   printf("[SPKRLOG] Seek\n");
 }
 
@@ -336,13 +325,22 @@ RCT_EXPORT_METHOD(enableBackgroundMode) {
 }
 
 RCT_EXPORT_METHOD(
-    	prepare:(NSString*)fileName
+    	prepare:(NSString*)filePath
     	withKey:(nonnull NSNumber*)key
       withOptions:(NSDictionary*)options
       withCallback:(RCTResponseSenderBlock)callback
 	){
-
-  AVPlayer * player = [[AVPlayer alloc] initWithURL:[ NSURL URLWithString:fileName ] ];
+    
+  AVPlayer * player;
+  
+  if ([filePath hasPrefix: @"http://"] || [filePath hasPrefix: @"https://"]) {
+    player = [[AVPlayer alloc] initWithURL:[ NSURL URLWithString:filePath ] ];
+  } else {
+    NSString *path = [[[NSBundle mainBundle] resourcePath] stringByAppendingPathComponent:filePath];
+    NSURL *url = [[NSURL alloc] initFileURLWithPath: path];
+    player = [[AVPlayer alloc] initWithURL:url];
+    NSLog(@"Local file %@", path);
+  }
 
   [player.currentItem addObserver:self forKeyPath:@"status" options:0 context:nil];
   player.allowsExternalPlayback = NO;
@@ -357,6 +355,9 @@ RCT_EXPORT_METHOD(
     seconds = 0;
   }
 
+//  NSLog(@"Filepath: %@ ", [[NSBundle mainBundle] bundlePath]);
+  
+  
   //Set duration
   [options setValue:@(seconds) forKey:@"duration"];
   
