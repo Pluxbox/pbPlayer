@@ -330,7 +330,7 @@ RCT_EXPORT_METHOD(
       withOptions:(NSDictionary*)options
       withCallback:(RCTResponseSenderBlock)callback
 	){
-    
+  
   AVPlayer * player;
   
   if ([filePath hasPrefix: @"http://"] || [filePath hasPrefix: @"https://"]) {
@@ -420,7 +420,6 @@ RCT_EXPORT_METHOD(
     if(!isSeeking) {
       [self sendEventWithName:@"PlayerUpdate" body: data ];
     }
-    
   }];
 }
 

@@ -14,6 +14,7 @@ import {
 
 // //GUI ifused as a React Native Component
 import Gui from './gui';
+import TimerMixin from 'react-timer-mixin';
 
 //Bridge Objective-c
 const { NativeRNAudio } = NativeModules;
@@ -61,12 +62,10 @@ export default class RNAudio extends Gui {
 
 					if(data._isReadyToPlay && data._isReadyToPlay !== this._isReadyToPlay ) {
 						this.state.canplay && this.state.canplay();
-
-						// console.log("adsadasdas");
-						setTimeout(()=> {
-							this.state._isComponent && this.state.autoplay && this.play();
+						// setTimeout(()=> {
+						// 	this.state._isComponent && this.state.autoplay && this.play();
 							
-						})
+						// })
 						this._isReadyToPlay = true;
 					}	
 				}
@@ -75,12 +74,7 @@ export default class RNAudio extends Gui {
 	}
 
 	componentDidMount() {
-		
-		!enableBackgroundModeIsSet && NativeRNAudio.enableBackgroundMode();
-
-		enableBackgroundModeIsSet = true;
-		this.state._isComponent = true;
-		
+		this.state._isComponent = true;	
 		this._prepare();	
 	}
 
@@ -91,7 +85,12 @@ export default class RNAudio extends Gui {
 	//Public params
 	set src ( string ) {
 		this.state.src = string;
-		// this._prepare();
+		if (!this.props) {
+			//Wait until al te protoypes are set
+			TimerMixin.setTimeout(() => {
+				this._prepare();
+			});
+		} 
 	}
 	
 	// set cover ( string ) {
@@ -99,7 +98,9 @@ export default class RNAudio extends Gui {
 	// }
 	
 	set canplay ( callback ) {
-		this.state.canplay = callback;
+		this._setState( {
+			canplay: callback
+		})
 	}
 
 	set ended ( callback ) {
@@ -147,6 +148,8 @@ export default class RNAudio extends Gui {
 
 	//Private fuctions
 	_prepare() {
+		!enableBackgroundModeIsSet && NativeRNAudio.enableBackgroundMode();
+		enableBackgroundModeIsSet = true;
 
 		if(!this.state.src) {
 			return;

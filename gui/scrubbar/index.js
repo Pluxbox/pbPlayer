@@ -41,11 +41,6 @@ export default class ScrubBar extends Component {
 	}
 
 	render() {
-
-
-
-		// console.log(this.props.isBuffering, this.state.value)
-
 		return (
 			<View style={[ this.props.style, styles.container ]}>
 				<Text style={styles.time}>{Moment(this.state.value*1000).format('mm:ss')}</Text>
