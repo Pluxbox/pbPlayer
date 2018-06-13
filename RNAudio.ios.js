@@ -93,10 +93,29 @@ export default class RNAudio extends Gui {
 		} 
 	}
 	
-	// set cover ( string ) {
-	// 	this._metadata.cover = string;
-	// }
+	//Airplay data 
+	set title ( string ) {
+		this._setState( {
+			title: string,
+		});
+	} 
 	
+	set artist ( string ) {
+		this._setState( {
+			artist: string,
+		});
+	} 
+	set album ( string ) {
+		this._setState( {
+			album: string,
+		});
+	} 
+	set cover ( string ) {
+		this._setState( {
+			cover: string,
+		});
+	} 
+
 	set canplay ( callback ) {
 		this._setState( {
 			canplay: callback

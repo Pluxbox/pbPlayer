@@ -414,7 +414,7 @@ RCT_EXPORT_METHOD(
   NSDictionary * data = @{
                             @"_currentTime": [NSNumber numberWithFloat:CMTimeGetSeconds(time)],
                             @"_key": key,
-                            @"_isPlaying": @(player.rate != 0 && player.error == nil),
+                            @"_isPlaying": @(player.rate != 0 && player.error == nil),  
 //                            @"_isEnded": @true,
                           };
     if(!isSeeking) {
