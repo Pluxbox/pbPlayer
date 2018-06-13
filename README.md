@@ -40,6 +40,8 @@ In a JS class function:
 ```
  let    player = new Audio();
         player.src = 'https://yourspeakr.com/audio/RadiopodcastDennisLaupman.mp3';
-        player.play();
+        this.assetPlayers[castId].canplay = () => {
+            player.play();
+        }
 
 ```
