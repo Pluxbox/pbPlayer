@@ -93,7 +93,6 @@
   
   for (NSString *key in ONAIR_DICT) {
     if ([details objectForKey:key] != nil) {
-//        NSLog(@" %@: %@", [ONAIR_DICT objectForKey:key], [details objectForKey:key]);
       [mediaDict setValue:[details objectForKey:key] forKey:[ONAIR_DICT objectForKey:key]];
     }
     
@@ -277,7 +276,6 @@ RCT_EXPORT_METHOD(play:(nonnull NSNumber*)key ) {
                              @"speed": @1,
                              }];
   } else {
-    
     self._key = key;
     [self setNowPlaying: key];
   }
@@ -387,7 +385,6 @@ RCT_EXPORT_METHOD(
   [self toggleHandler:remoteCenter.changePlaybackPositionCommand withSelector:@selector(changePlaybackPosition:) enabled:YES];
   
   remoteCenter.bookmarkCommand.localizedTitle = @"Mark position";
-  
   
   [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(audioSessionChangeObserver:) name:AVAudioSessionRouteChangeNotification object:nil];
   [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(itemDidFinishPlaying) name:AVPlayerItemDidPlayToEndTimeNotification object:player.currentItem];

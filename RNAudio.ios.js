@@ -65,7 +65,6 @@ export default class RNAudio extends Gui {
 
 					if(data._isFinished && data._isFinished !== this._isFinished ) {
 						this.state.ended && this.state.ended();
-						this._currentTime = 0;
 						this._isFinished = true;
 					} else if(data._isReadyToPlay && data._isReadyToPlay !== this._isReadyToPlay ) {
 						this.state.canplay && this.state.canplay();
