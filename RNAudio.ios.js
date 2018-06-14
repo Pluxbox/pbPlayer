@@ -62,10 +62,6 @@ export default class RNAudio extends Gui {
 
 					if(data._isReadyToPlay && data._isReadyToPlay !== this._isReadyToPlay ) {
 						this.state.canplay && this.state.canplay();
-						// setTimeout(()=> {
-						// 	this.state._isComponent && this.state.autoplay && this.play();
-							
-						// })
 						this._isReadyToPlay = true;
 					}	
 				}
@@ -143,9 +139,6 @@ export default class RNAudio extends Gui {
 	}
 
 	get currentTime () {
-// 
-		console.log("Aaa", this.state._currentTime);
-
   		return this.state._currentTime;
 	}
 
@@ -179,7 +172,7 @@ export default class RNAudio extends Gui {
 
 		this.state._key = this._djb2Code( this.state.src );
 
-		// //Get options
+		//Get options
 		var options  = Object.keys(this.state).reduce((previous, current) => {
 			if(['artist','title','album','cover'].indexOf(current) !== -1 && this.state[current]){
 				previous[current] = this.state[current];
@@ -196,12 +189,7 @@ export default class RNAudio extends Gui {
 			}
 		);
 
-		this.state._isLoaded = true;	
-
-		// if(this.state.autoplay && this.state._isComponent) {
-			// this.play();	
-			// this._setState({ _isPlaying: true})
-		// } 
+		this.state._isLoaded = true;
 	}	
 
 	_djb2Code(str) {
