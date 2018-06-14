@@ -305,8 +305,6 @@ RCT_EXPORT_METHOD(seek:(nonnull NSNumber*)key withValue:(nonnull NSNumber*)value
                                @"elapsedTime": [NSNumber numberWithFloat: [value floatValue]],
                                @"speed":  @(player.rate != 0 && player.error == nil) ? @1 : @0
                                }];
-      
-//      printf("[SPKRLOG] Seek aaa %@\n",  value );
     }
    ];
   printf("[SPKRLOG] Seek\n");
@@ -414,7 +412,7 @@ RCT_EXPORT_METHOD(
   NSDictionary * data = @{
                             @"_currentTime": [NSNumber numberWithFloat:CMTimeGetSeconds(time)],
                             @"_key": key,
-                            @"_isPlaying": @(player.rate != 0 && player.error == nil),  
+                            @"_isPlaying": @(player.rate != 0 && player.error == nil),
 //                            @"_isEnded": @true,
                           };
     if(!isSeeking) {

@@ -143,6 +143,9 @@ export default class RNAudio extends Gui {
 	}
 
 	get currentTime () {
+// 
+		console.log("Aaa", this.state._currentTime);
+
   		return this.state._currentTime;
 	}
 
@@ -213,7 +216,7 @@ export default class RNAudio extends Gui {
 	_setState( data ) {
 		if(this.state._isComponent) {
 			this.setState( data );
-		} else  if(this.state._key == data._key){
+		} else {
 			this.state = Object.assign(this.state, data)
 		}
 	}
