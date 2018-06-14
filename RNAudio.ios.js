@@ -48,6 +48,7 @@ export default class RNAudio extends Gui {
 			_key: null,
 			_isLoaded: false,
 			_isReadyToPlay: false,
+			_isFinished: false,
 		}, {}, props);
 
 		this.subscription = NativeRNAudioEmitter.addListener(
@@ -60,7 +61,13 @@ export default class RNAudio extends Gui {
 						_isPlaying: data._isPlaying,
 					});
 
-					if(data._isReadyToPlay && data._isReadyToPlay !== this._isReadyToPlay ) {
+					console.log(data);
+
+					if(data._isFinished && data._isFinished !== this._isFinished ) {
+						this.state.ended && this.state.ended();
+						this._currentTime = 0;
+						this._isFinished = true;
+					} else if(data._isReadyToPlay && data._isReadyToPlay !== this._isReadyToPlay ) {
 						this.state.canplay && this.state.canplay();
 						this._isReadyToPlay = true;
 					}	
@@ -118,6 +125,7 @@ export default class RNAudio extends Gui {
 		})
 	}
 
+	//Params
 	set ended ( callback ) {
 		this.state.ended = callback;
 	}
@@ -150,8 +158,10 @@ export default class RNAudio extends Gui {
 		return this.state._duration;
 	}
 
+	//controls
 	play () {
 		!this.state._isLoaded && this._prepare();
+		this._isFinished = false;
 		NativeRNAudio.play( this.state._key );
 	}
 
@@ -160,6 +170,11 @@ export default class RNAudio extends Gui {
 		NativeRNAudio.pause( this.state._key );
 	}
 
+	stop () {
+		console.log("isStopped");
+		this.currentTime = 0;
+		NativeRNAudio.stop( this.state._key );
+	}
 
 	//Private fuctions
 	_prepare() {

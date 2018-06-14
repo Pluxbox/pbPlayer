@@ -253,7 +253,11 @@
 
 -(void)itemDidFinishPlaying {
   printf("[SPKRLOG] Track Finished \n");
-  [[NSNotificationCenter defaultCenter] removeObserver:self];
+  NSDictionary * data = @{
+                          @"_key": self._key,
+                          @"_isFinished": @YES
+                          };
+  [self sendEventWithName:@"PlayerUpdate" body: data ];
 }
 
 -(void) LikeItem {
@@ -273,8 +277,6 @@ RCT_EXPORT_METHOD(play:(nonnull NSNumber*)key ) {
                              @"speed": @1,
                              }];
   } else {
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(audioSessionChangeObserver:) name:AVAudioSessionRouteChangeNotification object:nil];
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(itemDidFinishPlaying) name:AVPlayerItemDidPlayToEndTimeNotification object:player.currentItem];
     
     self._key = key;
     [self setNowPlaying: key];
@@ -290,6 +292,19 @@ RCT_EXPORT_METHOD(pause:(nonnull NSNumber*)key ) {
                            @"speed": @0,
                            }];
 	printf("[SPKRLOG] Pause\n");
+}
+
+
+RCT_EXPORT_METHOD(stop:(nonnull NSNumber*)key ) {
+  AVPlayer* player = [self playerForKey:key];
+  [player.currentItem seekToTime:kCMTimeZero];
+//  [player pause];
+  [self updateNowPlaying:@{
+                           @"elapsedTime": @0,
+                           @"speed": @0,
+                           }];
+  //[player removeTimeObserver:self.playbackTimeObserver];
+  printf("[SPKRLOG] Stop\n");
 }
 
 RCT_EXPORT_METHOD(seek:(nonnull NSNumber*)key withValue:(nonnull NSNumber*)value) {
@@ -352,9 +367,6 @@ RCT_EXPORT_METHOD(
   if (seconds != seconds) {
     seconds = 0;
   }
-
-//  NSLog(@"Filepath: %@ ", [[NSBundle mainBundle] bundlePath]);
-  
   
   //Set duration
   [options setValue:@(seconds) forKey:@"duration"];
@@ -375,6 +387,10 @@ RCT_EXPORT_METHOD(
   [self toggleHandler:remoteCenter.changePlaybackPositionCommand withSelector:@selector(changePlaybackPosition:) enabled:YES];
   
   remoteCenter.bookmarkCommand.localizedTitle = @"Mark position";
+  
+  
+  [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(audioSessionChangeObserver:) name:AVAudioSessionRouteChangeNotification object:nil];
+  [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(itemDidFinishPlaying) name:AVPlayerItemDidPlayToEndTimeNotification object:player.currentItem];
 }
 
 - (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object
