@@ -276,6 +276,7 @@ RCT_EXPORT_METHOD(play:(nonnull NSNumber*)key ) {
                              @"speed": @1,
                              }];
   } else {
+
     self._key = key;
     [self setNowPlaying: key];
   }
@@ -418,7 +419,7 @@ RCT_EXPORT_METHOD(
 - (void)updateJSScope: (nonnull NSNumber*)key {
   
   AVPlayer* player = [self playerForKey:key];
-  CMTime interval = CMTimeMakeWithSeconds(1, NSEC_PER_SEC); // 1 second
+  CMTime interval = CMTimeMakeWithSeconds(.25 , NSEC_PER_SEC); // 1 second
   
   playbackTimeObserver = [ player addPeriodicTimeObserverForInterval:interval queue:NULL usingBlock:^(CMTime time) {
     

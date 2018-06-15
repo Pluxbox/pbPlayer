@@ -35,6 +35,7 @@ export default class RNAudio extends Gui {
 			//Callbacks
 			autoplay: false,
 			canplay: null,
+			timeupdate: null,
 			ended: null,
 
 			//Private  vars
@@ -46,7 +47,7 @@ export default class RNAudio extends Gui {
 			_isEnded: false,
 			_isComponent: false,
 			_key: null,
-			_isLoaded: false,
+			_isLoaded: false,	
 			_isReadyToPlay: false,
 			_isFinished: false,
 		}, {}, props);
@@ -55,14 +56,11 @@ export default class RNAudio extends Gui {
 			'PlayerUpdate',
 			( data ) => {				
 				if(this.state._key == data._key){
-					
+					this.state.timeupdate && this.state.timeupdate();
 					this._setState( { 
 						_currentTime: data._currentTime,
 						_isPlaying: data._isPlaying,
 					});
-
-					console.log(data);
-
 					if(data._isFinished && data._isFinished !== this._isFinished ) {
 						this.state.ended && this.state.ended();
 						this._isFinished = true;
@@ -76,7 +74,13 @@ export default class RNAudio extends Gui {
 	}
 
 	componentDidMount() {
-		this.state._isComponent = true;	
+		if(this._ended) {
+			this._setState( {
+				_isComponent: true,
+				ended: this._ended,
+			})	
+		}
+		// this.state._isComponent = true;	
 		this._prepare();	
 	}
 
@@ -118,10 +122,17 @@ export default class RNAudio extends Gui {
 		});
 	} 
 
+	//Callback functions
+	set timeupdate ( callback ) {
+		this._setState( {
+			timeupdate: callback,
+		});
+	}
+
 	set canplay ( callback ) {
 		this._setState( {
-			canplay: callback
-		})
+			canplay: callback,
+		});
 	}
 
 	//Params
