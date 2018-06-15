@@ -76,11 +76,9 @@ export default class RNAudio extends Gui {
 
 	componentDidMount() {
 		this._isComponent = true;
-		if(this._ended) {
-			this._setState( {
-				ended: this._ended,
-			})	
-		}
+		this._setState( {
+			ended: () => this.stop()
+		});
 		this._prepare();	
 	}
 
