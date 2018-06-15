@@ -26,6 +26,8 @@ export default class RNAudio extends Gui {
 	
 	constructor( props ) {
 		super( props );
+		
+		this._isComponent = false,
 		this.state = Object.assign ({
 			
 			//Public vars
@@ -45,7 +47,6 @@ export default class RNAudio extends Gui {
 			_loop: false,
 			_isMuted: false,
 			_isEnded: false,
-			_isComponent: false,
 			_key: null,
 			_isLoaded: false,	
 			_isReadyToPlay: false,
@@ -74,13 +75,12 @@ export default class RNAudio extends Gui {
 	}
 
 	componentDidMount() {
+		this._isComponent = true;
 		if(this._ended) {
 			this._setState( {
-				_isComponent: true,
 				ended: this._ended,
 			})	
 		}
-		// this.state._isComponent = true;	
 		this._prepare();	
 	}
 
@@ -227,7 +227,7 @@ export default class RNAudio extends Gui {
 	}
 
 	_setState( data ) {
-		if(this.state._isComponent) {
+		if(this._isComponent) {
 			this.setState( data );
 		} else {
 			this.state = Object.assign(this.state, data)
