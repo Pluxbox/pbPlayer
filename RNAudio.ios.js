@@ -89,12 +89,10 @@ export default class RNAudio extends Gui {
 	//Public params
 	set src ( string ) {
 		this.state.src = string;
-		if (!this.props) {
-			//Wait until al te protoypes are set
-			TimerMixin.setTimeout(() => {
-				this._prepare();
-			});
-		} 
+		// Wait until al te protoypes are set
+		TimerMixin.setTimeout(() => {
+			this._prepare();
+		});
 	}
 	
 	//Airplay data 
@@ -193,7 +191,7 @@ export default class RNAudio extends Gui {
 			return;
 		}
 
-		this.state._key = this._djb2Code( this.state.src );
+		this.state._key = Math.floor(Math.random() * 10000000);
 
 		//Get options
 		var options  = Object.keys(this.state).reduce((previous, current) => {

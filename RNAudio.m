@@ -93,6 +93,9 @@
   
   for (NSString *key in ONAIR_DICT) {
     if ([details objectForKey:key] != nil) {
+      
+//      NSLog(@"keys %@", [details objectForKey:key]);
+      
       [mediaDict setValue:[details objectForKey:key] forKey:[ONAIR_DICT objectForKey:key]];
     }
     
@@ -100,6 +103,8 @@
       [mediaDict setValue:[NSNumber numberWithDouble:1] forKey:[ONAIR_DICT objectForKey:key]];
     }
   }
+  
+  NSLog(@"Test update Func %@", [mediaDict objectForKey:@"title"]);
   
   return mediaDict;
 }
@@ -173,13 +178,13 @@
 
 - (void) setNowPlaying:(nonnull NSNumber*)key {
   
-//  AVPlayer* player = [self playerForKey:key];
-
   NSMutableDictionary* details = [self nowPlayingForKey:key];
 
   MPNowPlayingInfoCenter *center = [MPNowPlayingInfoCenter defaultCenter];
   NSMutableDictionary *onAirInfo =  [NSMutableDictionary dictionary];
-
+  
+  NSLog(@"Test set");
+  
   center.nowPlayingInfo = [self update:onAirInfo with:details andSetDefaults:true];
 
   NSString *artworkUrl = [self getArtworkUrl:[details objectForKey:@"cover"]];
@@ -191,6 +196,8 @@
 
 
 - (void) updateNowPlaying:(NSDictionary *) originalDetails {
+  
+  NSLog(@"Test update");
   
   MPNowPlayingInfoCenter *center = [MPNowPlayingInfoCenter defaultCenter];
   NSMutableDictionary *onAirInfo = [[NSMutableDictionary alloc] initWithDictionary: center.nowPlayingInfo];
@@ -276,7 +283,6 @@ RCT_EXPORT_METHOD(play:(nonnull NSNumber*)key ) {
                              @"speed": @1,
                              }];
   } else {
-
     self._key = key;
     [self setNowPlaying: key];
   }

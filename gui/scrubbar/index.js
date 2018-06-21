@@ -30,10 +30,6 @@ export default class ScrubBar extends Component {
 		});
 	}
 
-	// shouldComponentUpdate() {
-	// 	return !this.state.isSeeking;
-	// }
-
 	_calculateRemainingDuration() {
 		const duration = (this.state.maximumValue-this.state.value) * 1000
 		return duration < 0 ? 0 : duration;
