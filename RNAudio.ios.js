@@ -164,6 +164,10 @@ export default class RNAudio extends Gui {
 		return this.state._duration;
 	}
 
+	get paused () {
+		return !this.state._isPlaying;
+	}
+
 	//controls
 	play () {
 		!this.state._isLoaded && this._prepare();
