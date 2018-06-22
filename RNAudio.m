@@ -93,18 +93,14 @@
   
   for (NSString *key in ONAIR_DICT) {
     if ([details objectForKey:key] != nil) {
-      
-//      NSLog(@"keys %@", [details objectForKey:key]);
-      
       [mediaDict setValue:[details objectForKey:key] forKey:[ONAIR_DICT objectForKey:key]];
     }
-    
     if ([key isEqualToString:@"speed"] && [details objectForKey:key] == nil && setDefault) {
       [mediaDict setValue:[NSNumber numberWithDouble:1] forKey:[ONAIR_DICT objectForKey:key]];
     }
   }
   
-  NSLog(@"Test update Func %@", [mediaDict objectForKey:@"title"]);
+  NSLog(@"Test update Func %@", [details objectForKey:@"title"]);
   
   return mediaDict;
 }
@@ -174,7 +170,7 @@
     });
   }
 }
-
+ 
 
 - (void) setNowPlaying:(nonnull NSNumber*)key {
   
@@ -183,7 +179,7 @@
   MPNowPlayingInfoCenter *center = [MPNowPlayingInfoCenter defaultCenter];
   NSMutableDictionary *onAirInfo =  [NSMutableDictionary dictionary];
   
-  NSLog(@"Test set");
+  NSLog(@"Test set %@	", key);
   
   center.nowPlayingInfo = [self update:onAirInfo with:details andSetDefaults:true];
 
@@ -197,8 +193,7 @@
 
 - (void) updateNowPlaying:(NSDictionary *) originalDetails {
   
-  NSLog(@"Test update");
-  
+
   MPNowPlayingInfoCenter *center = [MPNowPlayingInfoCenter defaultCenter];
   NSMutableDictionary *onAirInfo = [[NSMutableDictionary alloc] initWithDictionary: center.nowPlayingInfo];
 
@@ -206,6 +201,8 @@
 
   [onAirInfo setValue:[details objectForKey:@"speed"]   forKey:MPNowPlayingInfoPropertyPlaybackRate];
   [onAirInfo setValue:[details objectForKey:@"elapsedTime"]   forKey:MPNowPlayingInfoPropertyElapsedPlaybackTime];
+  
+  NSLog(@"blaaaaa update Func %@", [details objectForKey:@"title"]);
   
   center.nowPlayingInfo = [self update:onAirInfo with:details andSetDefaults:false];
 
@@ -292,11 +289,6 @@ RCT_EXPORT_METHOD(play:(nonnull NSNumber*)key ) {
 RCT_EXPORT_METHOD(pause:(nonnull NSNumber*)key ) {
   AVPlayer* player = [self playerForKey:key];
   [player pause];
-  [self updateNowPlaying:@{
-                           @"elapsedTime": [NSNumber numberWithFloat:CMTimeGetSeconds(player.currentItem.currentTime)],
-                           @"speed": @0,
-                           }];
-	printf("[SPKRLOG] Pause\n");
 }
 
 

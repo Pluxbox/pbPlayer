@@ -41,7 +41,7 @@ export default class RNAudio extends Gui {
 			ended: null,
 
 			//Private  vars
-			_isPlaying: false,
+			_isPlaying: 0,
 			_currentTime: 0,
 			_duration: 0,
 			_loop: false,
@@ -58,6 +58,9 @@ export default class RNAudio extends Gui {
 			( data ) => {				
 				if(this.state._key == data._key){
 					this.state.timeupdate && this.state.timeupdate();
+					this.state.playing && (this.state._isPlaying != data._isPlaying) && this.state.playing( data._isPlaying ? true : false );
+
+
 					this._setState( { 
 						_currentTime: data._currentTime,
 						_isPlaying: data._isPlaying,
@@ -128,6 +131,12 @@ export default class RNAudio extends Gui {
 	set canplay ( callback ) {
 		this._setState( {
 			canplay: callback,
+		});
+	}
+
+	set playing ( callback ) {
+		this._setState( {
+			playing: callback,
 		});
 	}
 
