@@ -1,7 +1,7 @@
-#import "RNAudio.h"
+#import "RNAudioPlayer.h"
 @import MediaPlayer;
 
-@implementation NativeRNAudio {
+@implementation NativeRNAudioPlayer {
   NSMutableDictionary* _playerPool;
   NSMutableDictionary* _nowPlayingPool;
   AVPlayer * playbackTimeObserver;

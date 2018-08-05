@@ -1,5 +1,6 @@
 {
   "name": "RNAudio",
   "version": "0.0.1",
-  "keywords": "react-native"
+  "keywords": "react-native",
+  "main": "RNAudio.ios.js"
 }

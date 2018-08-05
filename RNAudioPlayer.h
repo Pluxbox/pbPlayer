@@ -5,7 +5,7 @@
 
 #import <AVFoundation/AVFoundation.h>
 
-@interface NativeRNAudio : RCTEventEmitter <RCTBridgeModule, AVAudioPlayerDelegate>
+@interface NativeRNAudioPlayer : RCTEventEmitter <RCTBridgeModule, AVAudioPlayerDelegate>
 	@property (nonatomic, weak) NSNumber* _key;
   @property (nonatomic, copy) NSString *artworkUrl;
 @end

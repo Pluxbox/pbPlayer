@@ -7,7 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		13BE3DEE1AC21097009241FE /* RNAudio.m in Sources */ = {isa = PBXBuildFile; fileRef = 13BE3DED1AC21097009241FE /* RNAudio.m */; };
+		468F80822117AD2100004E35 /* RNAudioPlayer.m in Sources */ = {isa = PBXBuildFile; fileRef = 468F80802117AD2000004E35 /* RNAudioPlayer.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -23,9 +23,9 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
-		134814201AA4EA6300B7C361 /* libRNAudio.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libRNAudio.a; sourceTree = BUILT_PRODUCTS_DIR; };
-		13BE3DEC1AC21097009241FE /* RNAudio.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RNAudio.h; sourceTree = "<group>"; };
-		13BE3DED1AC21097009241FE /* RNAudio.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RNAudio.m; sourceTree = "<group>"; };
+		134814201AA4EA6300B7C361 /* libRNAudioPlayer.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libRNAudioPlayer.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		468F80802117AD2000004E35 /* RNAudioPlayer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RNAudioPlayer.m; sourceTree = "<group>"; };
+		468F80812117AD2100004E35 /* RNAudioPlayer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RNAudioPlayer.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -42,7 +42,7 @@
 		134814211AA4EA7D00B7C361 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				134814201AA4EA6300B7C361 /* libRNAudio.a */,
+				134814201AA4EA6300B7C361 /* libRNAudioPlayer.a */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -50,8 +50,8 @@
 		58B511D21A9E6C8500147676 = {
 			isa = PBXGroup;
 			children = (
-				13BE3DEC1AC21097009241FE /* RNAudio.h */,
-				13BE3DED1AC21097009241FE /* RNAudio.m */,
+				468F80812117AD2100004E35 /* RNAudioPlayer.h */,
+				468F80802117AD2000004E35 /* RNAudioPlayer.m */,
 				134814211AA4EA7D00B7C361 /* Products */,
 			);
 			indentWidth = 2;
@@ -62,9 +62,9 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		58B511DA1A9E6C8500147676 /* RNAudio */ = {
+		58B511DA1A9E6C8500147676 /* RNAudioPlayer */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 58B511EF1A9E6C8500147676 /* Build configuration list for PBXNativeTarget "RNAudio" */;
+			buildConfigurationList = 58B511EF1A9E6C8500147676 /* Build configuration list for PBXNativeTarget "RNAudioPlayer" */;
 			buildPhases = (
 				58B511D71A9E6C8500147676 /* Sources */,
 				58B511D81A9E6C8500147676 /* Frameworks */,
@@ -74,9 +74,9 @@
 			);
 			dependencies = (
 			);
-			name = RNAudio;
+			name = RNAudioPlayer;
 			productName = RCTDataManager;
-			productReference = 134814201AA4EA6300B7C361 /* libRNAudio.a */;
+			productReference = 134814201AA4EA6300B7C361 /* libRNAudioPlayer.a */;
 			productType = "com.apple.product-type.library.static";
 		};
 /* End PBXNativeTarget section */
@@ -93,7 +93,7 @@
 					};
 				};
 			};
-			buildConfigurationList = 58B511D61A9E6C8500147676 /* Build configuration list for PBXProject "RNAudio" */;
+			buildConfigurationList = 58B511D61A9E6C8500147676 /* Build configuration list for PBXProject "RNAudioPlayer" */;
 			compatibilityVersion = "Xcode 3.2";
 			developmentRegion = English;
 			hasScannedForEncodings = 0;
@@ -105,7 +105,7 @@
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				58B511DA1A9E6C8500147676 /* RNAudio */,
+				58B511DA1A9E6C8500147676 /* RNAudioPlayer */,
 			);
 		};
 /* End PBXProject section */
@@ -115,7 +115,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				13BE3DEE1AC21097009241FE /* RNAudio.m in Sources */,
+				468F80822117AD2100004E35 /* RNAudioPlayer.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -207,7 +207,7 @@
 				);
 				LIBRARY_SEARCH_PATHS = "$(inherited)";
 				OTHER_LDFLAGS = "-ObjC";
-				PRODUCT_NAME = RNAudio;
+				PRODUCT_NAME = RNAudioPlayer;
 				SKIP_INSTALL = YES;
 			};
 			name = Debug;
@@ -222,7 +222,7 @@
 				);
 				LIBRARY_SEARCH_PATHS = "$(inherited)";
 				OTHER_LDFLAGS = "-ObjC";
-				PRODUCT_NAME = RNAudio;
+				PRODUCT_NAME = RNAudioPlayer;
 				SKIP_INSTALL = YES;
 			};
 			name = Release;
@@ -230,7 +230,7 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		58B511D61A9E6C8500147676 /* Build configuration list for PBXProject "RNAudio" */ = {
+		58B511D61A9E6C8500147676 /* Build configuration list for PBXProject "RNAudioPlayer" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				58B511ED1A9E6C8500147676 /* Debug */,
@@ -239,7 +239,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		58B511EF1A9E6C8500147676 /* Build configuration list for PBXNativeTarget "RNAudio" */ = {
+		58B511EF1A9E6C8500147676 /* Build configuration list for PBXNativeTarget "RNAudioPlayer" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				58B511F01A9E6C8500147676 /* Debug */,
