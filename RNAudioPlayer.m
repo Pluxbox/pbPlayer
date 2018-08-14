@@ -437,6 +437,24 @@ RCT_EXPORT_METHOD(
     return YES;
 }
 
+- (NSString *)getPathForDirectory:(int)directory
+{
+  NSArray *paths = NSSearchPathForDirectoriesInDomains(directory, NSUserDomainMask, YES);
+  return [paths firstObject];
+}
+
+
+- (NSDictionary *)constantsToExport
+{
+  return @{
+    @"MainBundlePath": [[NSBundle mainBundle] bundlePath],
+    @"NSCachesDirectoryPath": [self getPathForDirectory:NSCachesDirectory],
+    @"NSDocumentDirectoryPath": [self getPathForDirectory:NSDocumentDirectory],
+    @"NSLibraryDirectoryPath": [self getPathForDirectory:NSLibraryDirectory]
+  };
+}
+
+
 @end
 
 

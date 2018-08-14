@@ -7,9 +7,7 @@ import React, { Component } from 'react';
 import {  
 	NativeModules,
 	NativeEventEmitter,
-	View,
-	Text,
-	Button,
+	Platform,
 } from 'react-native';
 
 // //GUI ifused as a React Native Component
@@ -24,7 +22,7 @@ let enableBackgroundModeIsSet = false;
 
 
 
-export default class RNAudio extends Gui {
+class AudioPlayer extends Gui {
 	
 	constructor( props ) {
 		super( props );
@@ -245,3 +243,27 @@ export default class RNAudio extends Gui {
 		}
 	}
 }
+
+let AudioPlayerUtils = {};
+
+if (Platform.OS === 'ios') {
+	AudioPlayerUtils = {
+	  MainBundlePath: NativeRNAudioPlayer.MainBundlePath,
+	  CachesDirectoryPath: NativeRNAudioPlayer.NSCachesDirectoryPath,
+	  DocumentDirectoryPath: NativeRNAudioPlayer.NSDocumentDirectoryPath,
+	  LibraryDirectoryPath: NativeRNAudioPlayer.NSLibraryDirectoryPath,
+	};
+  } else if (Platform.OS === 'android') {
+	// AudioUtils = {
+	//   MainBundlePath: NativeRNAudioPlayer.MainBundlePath,
+	//   CachesDirectoryPath: NativeRNAudioPlayer.CachesDirectoryPath,
+	//   DocumentDirectoryPath: NativeRNAudioPlayer.DocumentDirectoryPath,
+	//   LibraryDirectoryPath: NativeRNAudioPlayer.LibraryDirectoryPath,
+	//   PicturesDirectoryPath: NativeRNAudioPlayer.PicturesDirectoryPath,
+	//   MusicDirectoryPath: NativeRNAudioPlayer.MusicDirectoryPath,
+	//   DownloadsDirectoryPath: NativeRNAudioPlayer.DownloadsDirectoryPath
+	// };
+  }
+  
+
+module.exports = {AudioPlayer, AudioPlayerUtils};
