@@ -343,14 +343,9 @@ RCT_EXPORT_METHOD(
   
   AVPlayer * player;
   
-  if ([filePath hasPrefix: @"http://"] || [filePath hasPrefix: @"https://"]) {
-    player = [[AVPlayer alloc] initWithURL:[ NSURL URLWithString:filePath ] ];
-  } else {
-    NSString *path = [[[NSBundle mainBundle] resourcePath] stringByAppendingPathComponent:filePath];
-    NSURL *url = [[NSURL alloc] initFileURLWithPath: path];
-    player = [[AVPlayer alloc] initWithURL:url];
-    NSLog(@"Local file %@", path);
-  }
+  player = [[AVPlayer alloc] initWithURL:[ NSURL URLWithString:filePath ] ];
+//  NSLog(@"File path %@", filePath);
+
 
   [player.currentItem addObserver:self forKeyPath:@"status" options:0 context:nil];
   player.allowsExternalPlayback = NO;
