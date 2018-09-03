@@ -8,6 +8,9 @@ ReactNative Audio lib for IOS
 - Support for Airplay / Now playing Info on lockscreen 
 
 
+![iOS example comonent player](./docs/component-player.png)
+
+
 ## Installation ##
 
 First install the npm package from your app directory:
@@ -30,7 +33,7 @@ Then link it automatically using:
 Add on top of component file:
 
 ```
-    import {AudioPlayer} from 'RNAudio';
+    import {AudioPlayer} from 'pbplayer';
 ```
 
 
