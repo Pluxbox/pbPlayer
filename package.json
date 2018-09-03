@@ -1,5 +1,27 @@
 {
-  "name": "RNAudio",
-  "version": "0.0.1",
-  "keywords": "react-native"
+  "name": "pbplayer",
+  "version": "0.0.2",
+  "keywords": [
+    "react-native",
+    "audio",
+    "radio",
+    "sound",
+    "ios",
+    "android"
+  ],
+  "description": "ReactNative Audio lib for IOS",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Pluxbox/rn-audio-player.git"
+  },
+  "author": "Dennis Laupman",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/Pluxbox/rn-audio-player/issues"
+  },
+  "homepage": "https://github.com/Pluxbox/rn-audio-player#readme"
 }
