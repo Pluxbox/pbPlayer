@@ -2,8 +2,6 @@
 
 ReactNative Audio lib for IOS
 
-![iOS lockscreen](./docs/ios.png)
-
 - Support for local files (AAC, MP3 etc)
 - Support for network files (AAC, MP3 etc)
 - Support for steaming (Ice/Shoutcast, HLS etc) 
