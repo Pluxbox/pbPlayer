@@ -17,7 +17,7 @@ ReactNative Audio lib for IOS
 Add on top of component file:
 
 ```
-    import Audio from 'RNAudio';
+    import {AudioPlayer} from 'RNAudio';
 ```
 
 
@@ -25,11 +25,11 @@ Add in component render function:
 
 ```
     <Audio 
-        src="https://icecast.omroep.nl/radio1-bb-aac" 
-        artist="Dennis"
-        title="Dennies Podcast"
+        src="https://example.nl/stream" 
+        artist="Denny Lau"
+        title="Dennies Sing a Long"
         album="Dennies album"
-        cover="https://yourspeakr.com/images/thumb2.png"
+        cover="https://example.com/thumb.png"
     />
 ```
 
