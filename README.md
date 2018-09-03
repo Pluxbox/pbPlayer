@@ -5,6 +5,7 @@ ReactNative Audio lib for IOS
 - Support for local files (AAC, MP3 etc)
 - Support for network files (AAC, MP3 etc)
 - Support for steaming (Ice/Shoutcast, HLS etc) 
+- Support for Airplay / Now playing Info on lockscreen 
 
 
 ## INSTALLATION ##
@@ -77,5 +78,17 @@ In a JS class function:
 ```
     player.pause()
 ```
+
+## TODO ##
+- Cleanup
+- Android support
+
+## Need some help? ##
+Follow me on Twitter @dennis_pluxbox
+
+
+## Contributing ##
+Of course! I'm waiting your PR :) 
+
 
 
