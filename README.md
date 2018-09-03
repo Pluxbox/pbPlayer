@@ -8,7 +8,7 @@ ReactNative Audio lib for IOS
 - Support for Airplay / Now playing Info on lockscreen 
 
 
-![iOS example comonent player](./docs/component-player-sm.png)
+![iOS example comonent player](./docs/component-player.png)
 
 
 ## Installation ##
