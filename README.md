@@ -39,7 +39,7 @@ In a JS class function:
 
 ```
  let    player = new Audio();
-        player.src = 'https://yourspeakr.com/audio/RadiopodcastDennisLaupman.mp3';
+        player.src = 'https://example.com/fragment.aac';
         player.canplay = () => {
             player.play();
         }
