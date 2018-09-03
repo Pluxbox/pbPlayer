@@ -1,4 +1,4 @@
-# ReactNative Audio #
+# ReactNative Audio Player #
 
 ReactNative Audio lib for IOS
 
