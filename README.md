@@ -8,7 +8,7 @@ ReactNative Audio lib for IOS
 - Support for Airplay / Now playing Info on lockscreen 
 
 
-## INSTALLATION ##
+## Installation ##
 
 First install the npm package from your app directory:
 
@@ -23,7 +23,7 @@ Then link it automatically using:
 ```
 
 
-## USAGE ##
+## Usage ##
 
 **Component based**
 
@@ -79,7 +79,7 @@ In a JS class function:
     player.pause()
 ```
 
-## TODO ##
+## Todo ##
 - Cleanup
 - Android support
 
