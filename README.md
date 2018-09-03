@@ -5,14 +5,27 @@ ReactNative Audio lib for IOS
 - Support for local files (AAC, MP3 etc)
 - Support for network files (AAC, MP3 etc)
 - Support for steaming (Ice/Shoutcast, HLS etc) 
+- Support for Airplay / Now playing Info on lockscreen 
 
 
-## INSTALLATION ##
+## Installation ##
+
+First install the npm package from your app directory:
+
+```
+    npm install pbplayer --save
+```
+
+Then link it automatically using:
+
+```
+    react-native link pbplayer
+```
 
 
-## USAGE ##
+## Usage ##
 
-**Component based"**
+**Component based**
 
 Add on top of component file:
 
@@ -43,5 +56,39 @@ In a JS class function:
         player.canplay = () => {
             player.play();
         }
+            
+        player.ended = () => {
+            this.player.currentTime = 0;
+            this.setState({
+                isPlaying: false,
+            });
+        }
+        
+        player.timeupdate = ( cTime ) => {
+            if(player) {
+                this.setState( {
+                    duration: this.player.duration,
+                    value: this.state.isSeeking ? this.state.value : (cTime || 0),
+                });
+            }
+        }
+```
+
 
 ```
+    player.pause()
+```
+
+## Todo ##
+- Cleanup
+- Android support
+
+## Need some help? ##
+Follow me on Twitter @dennis_pluxbox
+
+
+## Contributing ##
+Of course! I'm waiting your PR :) 
+
+
+
