@@ -79,7 +79,7 @@ In a JS class function:
 
 
 ```
-    player.pause()
+    player.pause() 
 ```
 
 ## Todo ##
